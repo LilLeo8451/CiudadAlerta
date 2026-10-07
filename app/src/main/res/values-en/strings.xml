@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">City Alert</string>
+    <string name="title_new_report">New Report</string>
+    <string name="title_my_reports">My Reports</string>
+    <string name="btn_save">Save Report</string>
+    <string name="desc_bache">Pothole</string>
+    <string name="desc_luz">Streetlight</string>
+</resources>

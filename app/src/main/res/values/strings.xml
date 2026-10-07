@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Ciudad Alerta</string>
+    <string name="title_new_report">Nuevo Reporte</string>
+    <string name="title_my_reports">Mis Reportes</string>
+    <string name="btn_save">Guardar Reporte</string>
+    <string name="desc_bache">Bache</string>
+    <string name="desc_luz">Alumbrado</string>
+</resources>
