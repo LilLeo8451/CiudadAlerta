@@ -12,4 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.ciudadalerta.ui.theme.CiudadAlertaTheme
+import com.example.ciudadalerta.screens.AppNavigation
 
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            CiudadAlertaTheme {
+                AppNavigation()
+            }
+        }
+    }
+}
