@@ -1,47 +1,61 @@
 package com.example.ciudadalerta.screens
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val configuracion = LocalConfiguration.current
-    val esPantallaGrande = configuracion.screenWidthDp >= 600
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val rutaActual = navBackStackEntry?.destination?.route
 
     Scaffold(
         bottomBar = {
-            if (!esPantallaGrande) {
-                /* TODO: Agregar BottomNavigationBar */
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Add, contentDescription = "Nuevo") },
+                    label = { Text("Nuevo") },
+                    selected = rutaActual == "formulario",
+                    onClick = {
+                        navController.navigate("formulario") {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.List, contentDescription = "Lista") },
+                    label = { Text("Mis Reportes") },
+                    selected = rutaActual == "lista",
+                    onClick = {
+                        navController.navigate("lista") {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
             }
         }
     ) { paddingValues ->
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+        NavHost(
+            navController = navController,
+            startDestination = "formulario",
+            modifier = Modifier.padding(paddingValues)
         ) {
-
-            if (esPantallaGrande) {
-                /* TODO: Agregar NavigationRail */
-            }
-
-            NavHost(
-                navController = navController,
-                startDestination = "formulario", // Pantalla de inicio
-                modifier = Modifier.weight(1f)
-            ) {
-                composable("formulario") { FormularioScreen() }
-                composable("lista") { ListaScreen() }
-            }
+            composable("formulario") { FormularioScreen() }
+            composable("lista") { ListaScreen() }
         }
     }
 }

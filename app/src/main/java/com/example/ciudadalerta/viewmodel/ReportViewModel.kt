@@ -1,4 +1,4 @@
-package com.example.ciudadalerta.viewmodel // Ajusta a tu paquete real
+package com.example.ciudadalerta.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.ciudadalerta.model.Reporte
@@ -6,9 +6,9 @@ import com.example.ciudadalerta.repository.ReportRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class ReportViewModel : ViewModel() {
-    private val repository = ReportRepository()
 
-    // Estados de la pantalla (lo que el usuario llena)
+    val misReportes = ReportRepository.reportesFlow
+
     var categoria = MutableStateFlow("Bache")
     var descripcion = MutableStateFlow("")
     var ubicacionConfirmada = MutableStateFlow(false)
@@ -21,7 +21,7 @@ class ReportViewModel : ViewModel() {
             ubicacionConfirmada = ubicacionConfirmada.value,
             hora = hora.value
         )
-        repository.guardarReporte(nuevoReporte)
+        ReportRepository.guardarReporte(nuevoReporte)
 
         descripcion.value = ""
         ubicacionConfirmada.value = false
