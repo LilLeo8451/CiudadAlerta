@@ -25,7 +25,7 @@ import com.example.ciudadalerta.viewmodel.ReportViewModel
 fun ListaScreen(
     usuarioId: Int,
     onReporteClick: (Int) -> Unit,
-    viewModel: ReportViewModel = viewModel()
+    viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)
 ) {
     val todos by viewModel.reportes.collectAsState()
     val mios = remember(todos, usuarioId) {

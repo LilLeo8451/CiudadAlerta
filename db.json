@@ -1,0 +1,9 @@
+{
+  "reportes": [
+    { "id": 1, "categoria": "BACHE", "descripcion": "Bache profundo en la calle principal", "latitud": null, "longitud": null, "fecha": "25/10/2026", "hora": "10:00", "estatus": "PENDIENTE", "usuarioId": 2 },
+    { "id": 2, "categoria": "ALUMBRADO", "descripcion": "Lámpara fundida en la esquina", "latitud": null, "longitud": null, "fecha": "24/10/2026", "hora": "20:30", "estatus": "RESUELTO", "usuarioId": 2 },
+    { "id": 3, "categoria": "BASURA", "descripcion": "Basura acumulada junto al mercado", "latitud": null, "longitud": null, "fecha": "26/10/2026", "hora": "08:15", "estatus": "EN_REVISION", "usuarioId": 2 },
+    { "id": 4, "categoria": "FUGA_AGUA", "descripcion": "Fuga de agua en la banqueta frente a la escuela", "latitud": null, "longitud": null, "fecha": "27/10/2026", "hora": "07:40", "estatus": "PENDIENTE", "usuarioId": 2 },
+    { "id": 5, "categoria": "BACHE", "descripcion": "Bache en el cruce de la avenida", "latitud": null, "longitud": null, "fecha": "23/10/2026", "hora": "17:20", "estatus": "PENDIENTE", "usuarioId": 2 }
+  ]
+}

@@ -10,3 +10,6 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# Retrofit + Gson: los DTO se llenan por reflexión, R8 no debe renombrar sus campos
+-keep class com.example.ciudadalerta.data.remote.dto.** { *; }

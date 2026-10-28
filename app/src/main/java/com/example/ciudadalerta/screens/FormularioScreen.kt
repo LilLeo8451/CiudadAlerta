@@ -41,7 +41,7 @@ import com.example.ciudadalerta.viewmodel.ReportViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel()) {
+fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)) {
     val categoria by viewModel.categoria.collectAsState()
     val descripcion by viewModel.descripcion.collectAsState()
     val ubicacionConfirmada by viewModel.ubicacionConfirmada.collectAsState()

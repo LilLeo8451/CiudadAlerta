@@ -48,7 +48,7 @@ fun DetalleReporteScreen(
     reporteId: Int,
     esAdmin: Boolean,
     onVolver: () -> Unit,
-    viewModel: ReportViewModel = viewModel()
+    viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)
 ) {
     val reportes by viewModel.reportes.collectAsState()
     val reporte = reportes.find { it.id == reporteId }

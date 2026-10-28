@@ -28,7 +28,7 @@ import com.example.ciudadalerta.viewmodel.AdminViewModel
 @Composable
 fun AdminListaScreen(
     onReporteClick: (Int) -> Unit,
-    viewModel: AdminViewModel = viewModel()
+    viewModel: AdminViewModel = viewModel(factory = AdminViewModel.Factory)
 ) {
     val reportes by viewModel.reportesFiltrados.collectAsState()
     val filtro by viewModel.filtroCategoria.collectAsState()
