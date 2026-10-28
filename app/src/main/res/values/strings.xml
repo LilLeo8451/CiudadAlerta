@@ -1,8 +1,82 @@
 <resources>
     <string name="app_name">Ciudad Alerta</string>
+
+    <!-- Categorías -->
+    <string name="cat_bache">Bache</string>
+    <string name="cat_alumbrado">Alumbrado</string>
+    <string name="cat_basura">Basura</string>
+    <string name="cat_fuga_agua">Fuga de agua</string>
+
+    <!-- Estados -->
+    <string name="estado_pendiente">Pendiente</string>
+    <string name="estado_en_revision">En revisión</string>
+    <string name="estado_resuelto">Resuelto</string>
+
+    <!-- Roles -->
+    <string name="rol_ciudadano">Ciudadano</string>
+    <string name="rol_admin">Administrador</string>
+
+    <!-- Navegación -->
+    <string name="nav_nuevo">Nuevo</string>
+    <string name="nav_mis_reportes">Mis reportes</string>
+    <string name="nav_reportes">Reportes</string>
+    <string name="nav_perfil">Perfil</string>
+    <string name="cd_volver">Volver</string>
+
+    <!-- Login / Registro -->
+    <string name="login_title">Inicia sesión para continuar</string>
+    <string name="registro_title">Crear cuenta</string>
+    <string name="field_nombre">Nombre completo</string>
+    <string name="field_correo">Correo electrónico</string>
+    <string name="field_password">Contraseña</string>
+    <string name="field_confirmar_password">Confirmar contraseña</string>
+    <string name="btn_login">Iniciar sesión</string>
+    <string name="btn_registrar">Registrarme</string>
+    <string name="btn_ir_registro">¿No tienes cuenta? Regístrate</string>
+    <string name="btn_ir_login">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="cd_ver_password">Mostrar contraseña</string>
+    <string name="cd_ocultar_password">Ocultar contraseña</string>
+    <string name="error_campos_vacios">Completa todos los campos.</string>
+    <string name="error_credenciales">Correo o contraseña incorrectos.</string>
+    <string name="error_correo_invalido">El correo no es válido.</string>
+    <string name="error_correo_registrado">Ese correo ya está registrado.</string>
+    <string name="error_password_corta">La contraseña debe tener al menos 6 caracteres.</string>
+    <string name="error_passwords_no_coinciden">Las contraseñas no coinciden.</string>
+
+    <!-- Nuevo reporte -->
     <string name="title_new_report">Nuevo Reporte</string>
-    <string name="title_my_reports">Mis Reportes</string>
+    <string name="label_tipo_problema">Tipo de problema:</string>
+    <string name="label_descripcion">Descripción (Ej. Bache profundo)</string>
+    <string name="label_hora_avistamiento">Hora de avistamiento: %1$s</string>
+    <string name="btn_elegir_hora">Elegir hora</string>
+    <string name="btn_aceptar">Aceptar</string>
+    <string name="label_confirmar_ubicacion">Confirmar que estoy en el lugar del incidente</string>
     <string name="btn_save">Guardar Reporte</string>
-    <string name="desc_bache">Bache</string>
-    <string name="desc_luz">Alumbrado</string>
+    <string name="msg_reporte_guardado">Reporte guardado</string>
+
+    <!-- Mis reportes -->
+    <string name="title_my_reports">Mis Reportes</string>
+    <string name="empty_mis_reportes">Aún no has hecho ningún reporte.</string>
+    <string name="label_fecha_hora">%1$s · %2$s</string>
+
+    <!-- Administrador -->
+    <string name="title_admin_reportes">Reportes ciudadanos</string>
+    <string name="filtro_todos">Todos</string>
+    <string name="label_total_reportes">Mostrando %1$d reportes</string>
+    <string name="empty_reportes_filtro">No hay reportes en esta categoría.</string>
+
+    <!-- Detalle -->
+    <string name="title_detalle">Detalle del reporte</string>
+    <string name="label_descripcion_detalle">Descripción</string>
+    <string name="label_fecha">Fecha</string>
+    <string name="label_hora_simple">Hora</string>
+    <string name="label_ubicacion">Ubicación confirmada</string>
+    <string name="label_reportado_por">Reportado por</string>
+    <string name="label_cambiar_estado">Cambiar estado</string>
+    <string name="valor_si">Sí</string>
+    <string name="valor_no">No</string>
+    <string name="msg_no_encontrado">No se encontró el reporte.</string>
+
+    <!-- Perfil -->
+    <string name="btn_logout">Cerrar sesión</string>
 </resources>

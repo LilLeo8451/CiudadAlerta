@@ -1,8 +1,82 @@
 <resources>
     <string name="app_name">City Alert</string>
+
+    <!-- Categories -->
+    <string name="cat_bache">Pothole</string>
+    <string name="cat_alumbrado">Streetlight</string>
+    <string name="cat_basura">Garbage</string>
+    <string name="cat_fuga_agua">Water leak</string>
+
+    <!-- Status -->
+    <string name="estado_pendiente">Pending</string>
+    <string name="estado_en_revision">In review</string>
+    <string name="estado_resuelto">Resolved</string>
+
+    <!-- Roles -->
+    <string name="rol_ciudadano">Citizen</string>
+    <string name="rol_admin">Administrator</string>
+
+    <!-- Navigation -->
+    <string name="nav_nuevo">New</string>
+    <string name="nav_mis_reportes">My reports</string>
+    <string name="nav_reportes">Reports</string>
+    <string name="nav_perfil">Profile</string>
+    <string name="cd_volver">Back</string>
+
+    <!-- Login / Sign up -->
+    <string name="login_title">Sign in to continue</string>
+    <string name="registro_title">Create account</string>
+    <string name="field_nombre">Full name</string>
+    <string name="field_correo">Email</string>
+    <string name="field_password">Password</string>
+    <string name="field_confirmar_password">Confirm password</string>
+    <string name="btn_login">Sign in</string>
+    <string name="btn_registrar">Sign up</string>
+    <string name="btn_ir_registro">Don\'t have an account? Sign up</string>
+    <string name="btn_ir_login">Already have an account? Sign in</string>
+    <string name="cd_ver_password">Show password</string>
+    <string name="cd_ocultar_password">Hide password</string>
+    <string name="error_campos_vacios">Please fill in all fields.</string>
+    <string name="error_credenciales">Incorrect email or password.</string>
+    <string name="error_correo_invalido">The email is not valid.</string>
+    <string name="error_correo_registrado">That email is already registered.</string>
+    <string name="error_password_corta">Password must be at least 6 characters.</string>
+    <string name="error_passwords_no_coinciden">Passwords do not match.</string>
+
+    <!-- New report -->
     <string name="title_new_report">New Report</string>
-    <string name="title_my_reports">My Reports</string>
+    <string name="label_tipo_problema">Type of problem:</string>
+    <string name="label_descripcion">Description (e.g. Deep pothole)</string>
+    <string name="label_hora_avistamiento">Time spotted: %1$s</string>
+    <string name="btn_elegir_hora">Pick time</string>
+    <string name="btn_aceptar">OK</string>
+    <string name="label_confirmar_ubicacion">I confirm I am at the incident location</string>
     <string name="btn_save">Save Report</string>
-    <string name="desc_bache">Pothole</string>
-    <string name="desc_luz">Streetlight</string>
+    <string name="msg_reporte_guardado">Report saved</string>
+
+    <!-- My reports -->
+    <string name="title_my_reports">My Reports</string>
+    <string name="empty_mis_reportes">You haven\'t made any reports yet.</string>
+    <string name="label_fecha_hora">%1$s · %2$s</string>
+
+    <!-- Administrator -->
+    <string name="title_admin_reportes">Citizen reports</string>
+    <string name="filtro_todos">All</string>
+    <string name="label_total_reportes">Showing %1$d reports</string>
+    <string name="empty_reportes_filtro">There are no reports in this category.</string>
+
+    <!-- Detail -->
+    <string name="title_detalle">Report details</string>
+    <string name="label_descripcion_detalle">Description</string>
+    <string name="label_fecha">Date</string>
+    <string name="label_hora_simple">Time</string>
+    <string name="label_ubicacion">Location confirmed</string>
+    <string name="label_reportado_por">Reported by</string>
+    <string name="label_cambiar_estado">Change status</string>
+    <string name="valor_si">Yes</string>
+    <string name="valor_no">No</string>
+    <string name="msg_no_encontrado">Report not found.</string>
+
+    <!-- Profile -->
+    <string name="btn_logout">Sign out</string>
 </resources>
