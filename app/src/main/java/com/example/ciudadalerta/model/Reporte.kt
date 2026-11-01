@@ -12,5 +12,9 @@ data class Reporte(
     val fecha: String,          // dd/MM/yyyy
     val hora: String,           // HH:mm
     val estatus: EstadoReporte = EstadoReporte.PENDIENTE,
-    val usuarioId: Int
+    val usuarioId: Int,
+    val latitud: Double? = null,
+    val longitud: Double? = null,
+    val sincronizado: Boolean = false,   // false = falta subirlo a la API
+    val remoteId: Int? = null            // id que le asigna el servidor
 )

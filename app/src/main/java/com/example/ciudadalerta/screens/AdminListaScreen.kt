@@ -23,12 +23,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.CategoriaReporte
 import com.example.ciudadalerta.viewmodel.AdminViewModel
+import com.example.ciudadalerta.viewmodel.AppViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminListaScreen(
     onReporteClick: (Int) -> Unit,
-    viewModel: AdminViewModel = viewModel()
+    viewModel: AdminViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val reportes by viewModel.reportesFiltrados.collectAsState()
     val filtro by viewModel.filtroCategoria.collectAsState()

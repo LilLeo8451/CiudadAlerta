@@ -36,7 +36,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.EstadoReporte
 import com.example.ciudadalerta.viewmodel.ReportViewModel
-
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import com.example.ciudadalerta.viewmodel.AppViewModelProvider
 /**
  * Detalle de un reporte.
  * - Ciudadano (esAdmin = false): solo lectura.
@@ -48,10 +51,11 @@ fun DetalleReporteScreen(
     reporteId: Int,
     esAdmin: Boolean,
     onVolver: () -> Unit,
-    viewModel: ReportViewModel = viewModel()
+    viewModel: ReportViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val reportes by viewModel.reportes.collectAsState()
-    val reporte = reportes.find { it.id == reporteId }
+    val reporteState by remember(reporteId) { viewModel.observarReporte(reporteId) }
+        .collectAsState(initial = null)
+    val reporte = reporteState
 
     Column(
         modifier = Modifier
@@ -71,7 +75,7 @@ fun DetalleReporteScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         if (reporte == null) {
-            Text(text = stringResource(R.string.msg_no_encontrado))
+            CircularProgressIndicator()
         } else {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -98,7 +102,10 @@ fun DetalleReporteScreen(
                         R.string.label_ubicacion,
                         stringResource(if (reporte.ubicacionConfirmada) R.string.valor_si else R.string.valor_no)
                     )
-                    InfoFila(R.string.label_reportado_por, viewModel.nombreAutor(reporte.usuarioId))
+                    val autor by produceState(initialValue = "—", reporte.usuarioId) {
+                        value = viewModel.nombreAutor(reporte.usuarioId)
+                    }
+                    InfoFila(R.string.label_reportado_por, autor)
                 }
             }
 

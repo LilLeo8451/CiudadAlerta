@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ciudadalerta.R
 import com.example.ciudadalerta.viewmodel.ReportViewModel
-
+import com.example.ciudadalerta.viewmodel.AppViewModelProvider
 @Composable
 fun ListaScreen(
     usuarioId: Int,
     onReporteClick: (Int) -> Unit,
-    viewModel: ReportViewModel = viewModel()
+    viewModel: ReportViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val todos by viewModel.reportes.collectAsState()
     val mios = remember(todos, usuarioId) {

@@ -28,6 +28,7 @@ import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.Rol
 import com.example.ciudadalerta.model.Usuario
 import com.example.ciudadalerta.viewmodel.AuthViewModel
+import com.example.ciudadalerta.viewmodel.AppViewModelProvider
 
 object Rutas {
     const val LOGIN = "login"
@@ -63,7 +64,7 @@ private fun rutaInicioPara(usuario: Usuario): String =
     if (usuario.rol == Rol.ADMIN) Rutas.ADMIN_LISTA else Rutas.FORMULARIO
 
 @Composable
-fun AppNavigation(authViewModel: AuthViewModel = viewModel()) {
+fun AppNavigation(authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = backStackEntry?.destination?.route
