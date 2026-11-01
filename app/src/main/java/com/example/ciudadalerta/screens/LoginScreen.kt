@@ -112,7 +112,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { authViewModel.login(correo, password)?.let(onLoginExitoso) },
+            onClick = { authViewModel.login(correo, password, onLoginExitoso) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.btn_login))
