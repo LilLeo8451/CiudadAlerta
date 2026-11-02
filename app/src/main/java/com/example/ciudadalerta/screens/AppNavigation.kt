@@ -38,6 +38,8 @@ object Rutas {
     const val PERFIL = "perfil"
     const val DETALLE = "detalle/{id}"
     fun detalle(id: Int) = "detalle/$id"
+    const val EDITAR = "editar/{id}"
+    fun editar(id: Int) = "editar/$id"
 }
 
 private data class ItemBarra(
@@ -149,6 +151,18 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel(factory = AuthViewMod
                 DetalleReporteScreen(
                     reporteId = id,
                     esAdmin = esAdmin,
+                    usuarioActualId = usuario?.id ?: 0,
+                    onVolver = { navController.popBackStack() },
+                    onEditar = { navController.navigate(Rutas.editar(id)) }
+                )
+            }
+            composable(
+                route = Rutas.EDITAR,
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { entry ->
+                val id = entry.arguments?.getInt("id") ?: 0
+                EditarReporteScreen(
+                    reporteId = id,
                     onVolver = { navController.popBackStack() }
                 )
             }

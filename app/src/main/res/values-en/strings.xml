@@ -79,4 +79,13 @@
 
     <!-- Profile -->
     <string name="btn_logout">Sign out</string>
+    <!-- Edit / delete -->
+    <string name="btn_editar">Edit</string>
+    <string name="btn_eliminar">Delete</string>
+    <string name="btn_cancelar">Cancel</string>
+    <string name="btn_guardar_cambios">Save changes</string>
+    <string name="title_editar_reporte">Edit report</string>
+    <string name="dialog_eliminar_titulo">Delete report?</string>
+    <string name="dialog_eliminar_mensaje">This action cannot be undone.</string>
+    <string name="msg_reporte_actualizado">Report updated</string>
 </resources>

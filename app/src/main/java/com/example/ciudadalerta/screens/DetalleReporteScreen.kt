@@ -9,23 +9,34 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,23 +47,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.EstadoReporte
 import com.example.ciudadalerta.viewmodel.ReportViewModel
-import androidx.compose.runtime.produceState
 
 /**
  * Detalle de un reporte.
- * - Ciudadano (esAdmin = false): solo lectura.
- * - Administrador (esAdmin = true): además puede cambiar el estado del reporte.
+ * - Ciudadano dueño del reporte (mientras esté PENDIENTE): puede editarlo y eliminarlo.
+ * - Administrador: puede cambiar el estado y eliminar el reporte.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleReporteScreen(
     reporteId: Int,
     esAdmin: Boolean,
+    usuarioActualId: Int,
     onVolver: () -> Unit,
+    onEditar: () -> Unit,
     viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)
 ) {
     val reportes by viewModel.reportes.collectAsState()
     val reporte = reportes.find { it.id == reporteId }
+    var confirmarEliminar by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -74,6 +87,12 @@ fun DetalleReporteScreen(
         if (reporte == null) {
             Text(text = stringResource(R.string.msg_no_encontrado))
         } else {
+            val esDuenoYPendiente = !esAdmin &&
+                    reporte.usuarioId == usuarioActualId &&
+                    reporte.estatus == EstadoReporte.PENDIENTE
+            val puedeEditar = esDuenoYPendiente
+            val puedeEliminar = esAdmin || esDuenoYPendiente
+
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -132,6 +151,55 @@ fun DetalleReporteScreen(
                         )
                     }
                 }
+            }
+
+            if (puedeEditar || puedeEliminar) {
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    if (puedeEditar) {
+                        OutlinedButton(onClick = onEditar, modifier = Modifier.weight(1f)) {
+                            Icon(Icons.Filled.Edit, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.btn_editar))
+                        }
+                    }
+                    if (puedeEliminar) {
+                        OutlinedButton(
+                            onClick = { confirmarEliminar = true },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Icon(Icons.Filled.Delete, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.btn_eliminar))
+                        }
+                    }
+                }
+            }
+
+            if (confirmarEliminar) {
+                AlertDialog(
+                    onDismissRequest = { confirmarEliminar = false },
+                    title = { Text(stringResource(R.string.dialog_eliminar_titulo)) },
+                    text = { Text(stringResource(R.string.dialog_eliminar_mensaje)) },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            confirmarEliminar = false
+                            viewModel.eliminarReporte(reporte.id)
+                            onVolver()
+                        }) { Text(stringResource(R.string.btn_eliminar)) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { confirmarEliminar = false }) {
+                            Text(stringResource(R.string.btn_cancelar))
+                        }
+                    }
+                )
             }
         }
     }

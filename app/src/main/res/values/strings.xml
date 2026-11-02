@@ -79,4 +79,14 @@
 
     <!-- Perfil -->
     <string name="btn_logout">Cerrar sesión</string>
+
+    <!-- Editar / eliminar -->
+    <string name="btn_editar">Editar</string>
+    <string name="btn_eliminar">Eliminar</string>
+    <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_guardar_cambios">Guardar cambios</string>
+    <string name="title_editar_reporte">Editar reporte</string>
+    <string name="dialog_eliminar_titulo">¿Eliminar reporte?</string>
+    <string name="dialog_eliminar_mensaje">Esta acción no se puede deshacer.</string>
+    <string name="msg_reporte_actualizado">Reporte actualizado</string>
 </resources>
