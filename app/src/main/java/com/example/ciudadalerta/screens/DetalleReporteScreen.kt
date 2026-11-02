@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.EstadoReporte
 import com.example.ciudadalerta.viewmodel.ReportViewModel
+import androidx.compose.runtime.produceState
 
 /**
  * Detalle de un reporte.
@@ -98,7 +99,10 @@ fun DetalleReporteScreen(
                         R.string.label_ubicacion,
                         stringResource(if (reporte.ubicacionConfirmada) R.string.valor_si else R.string.valor_no)
                     )
-                    InfoFila(R.string.label_reportado_por, viewModel.nombreAutor(reporte.usuarioId))
+                    val autor by produceState(initialValue = "—", reporte.usuarioId) {
+                        value = viewModel.nombreAutor(reporte.usuarioId)
+                    }
+                    InfoFila(R.string.label_reportado_por, autor)
                 }
             }
 

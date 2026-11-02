@@ -43,7 +43,7 @@ object Rutas {
 private data class ItemBarra(
     val ruta: String,
     val icono: ImageVector,
-    @StringRes val etiqueta: Int
+    @param:StringRes val etiqueta: Int
 )
 
 private val itemsCiudadano = listOf(
@@ -63,7 +63,7 @@ private fun rutaInicioPara(usuario: Usuario): String =
     if (usuario.rol == Rol.ADMIN) Rutas.ADMIN_LISTA else Rutas.FORMULARIO
 
 @Composable
-fun AppNavigation(authViewModel: AuthViewModel = viewModel()) {
+fun AppNavigation(authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.Factory)) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = backStackEntry?.destination?.route

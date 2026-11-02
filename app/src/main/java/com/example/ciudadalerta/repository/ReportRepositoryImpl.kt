@@ -22,9 +22,9 @@ import kotlinx.coroutines.sync.withLock
  */
 class ReportRepositoryImpl(
     private val local: ReportLocalDataSource,
-    private val remote: ReportRemoteDataSource
+    private val remote: ReportRemoteDataSource,
+    private val notificaciones: NotificacionRepository
 ) : ReportRepository {
-
     /** Evita que dos sincronizaciones al mismo tiempo suban dos veces el mismo reporte. */
     private val mutex = Mutex()
 
@@ -57,7 +57,11 @@ class ReportRepositoryImpl(
     }
 
     override suspend fun cambiarEstado(id: Int, estado: EstadoReporte) {
+        val actual = local.buscarPorId(id) ?: return
+        if (actual.estatus == estado) return
+
         local.actualizarEstado(id, estado)   // el DAO ya lo marca sincronizado = 0
+        notificaciones.crear(actual.usuarioId, id, estado)   // avisa al autor del reporte
         subir(id)
     }
 
@@ -87,7 +91,13 @@ class ReportRepositoryImpl(
                 when {
                     existente == null -> local.insertar(nuevo)
                     // Solo sobrescribimos si no hay cambios locales pendientes de subir
-                    existente.sincronizado -> local.actualizar(nuevo.copy(id = existente.id))
+                    existente.sincronizado -> {
+                        // Si el estado cambió en el servidor, se avisa al autor del reporte
+                        if (existente.estatus != nuevo.estatus) {
+                            notificaciones.crear(existente.usuarioId, existente.id, nuevo.estatus)
+                        }
+                        local.actualizar(nuevo.copy(id = existente.id))
+                    }
                     else -> Unit
                 }
             }

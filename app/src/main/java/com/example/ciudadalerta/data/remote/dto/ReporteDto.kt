@@ -31,6 +31,7 @@ data class ReporteDto(
     @SerializedName("descripcion") val descripcion: String? = null,
     @SerializedName("latitud") val latitud: Double? = null,
     @SerializedName("longitud") val longitud: Double? = null,
+    @SerializedName("ubicacionConfirmada") val ubicacionConfirmada: Boolean? = null,
     @SerializedName("fecha") val fecha: String? = null,      // dd/MM/yyyy
     @SerializedName("hora") val hora: String? = null,        // HH:mm
     @SerializedName("estatus") val estatus: String? = null,

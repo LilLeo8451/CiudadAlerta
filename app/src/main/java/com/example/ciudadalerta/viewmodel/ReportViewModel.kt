@@ -10,8 +10,8 @@ import com.example.ciudadalerta.CiudadAlertaApp
 import com.example.ciudadalerta.model.CategoriaReporte
 import com.example.ciudadalerta.model.EstadoReporte
 import com.example.ciudadalerta.model.Reporte
+import com.example.ciudadalerta.repository.AuthRepository
 import com.example.ciudadalerta.repository.ReportRepository
-import com.example.ciudadalerta.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ReportViewModel(private val repository: ReportRepository) : ViewModel() {
+class ReportViewModel(
+    private val repository: ReportRepository,
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     /** Viene de Room: se actualiza solo al crear, editar, borrar o sincronizar. */
     val reportes: StateFlow<List<Reporte>> = repository.reportes
@@ -82,16 +85,15 @@ class ReportViewModel(private val repository: ReportRepository) : ViewModel() {
         }
     }
 
-    // TODO: pasar a UsuarioRepository con Room cuando esté listo
-    fun nombreAutor(usuarioId: Int): String =
-        UsuarioRepository.buscarPorId(usuarioId)?.nombre ?: "—"
+    suspend fun nombreAutor(usuarioId: Int): String =
+        authRepository.buscarPorId(usuarioId)?.nombre ?: "—"
 
     companion object {
         /** Uso en Compose: viewModel(factory = ReportViewModel.Factory) */
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as CiudadAlertaApp
-                ReportViewModel(app.container.reportRepository)
+                ReportViewModel(app.container.reportRepository, app.container.authRepository)
             }
         }
     }

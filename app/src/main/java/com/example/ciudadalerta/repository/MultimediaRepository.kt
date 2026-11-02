@@ -1,6 +1,5 @@
 package com.example.ciudadalerta.repository
 
-
 import com.example.ciudadalerta.model.Multimedia
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +11,4 @@ interface MultimediaRepository {
     suspend fun agregar(reporteId: Int, uri: String): Int
 
     suspend fun eliminar(multimedia: Multimedia)
-
-    /** Sube las fotos pendientes. Solo puede subir las de reportes que ya tengan remoteId. */
-    suspend fun sincronizarPendientes(): Result<Unit>
 }

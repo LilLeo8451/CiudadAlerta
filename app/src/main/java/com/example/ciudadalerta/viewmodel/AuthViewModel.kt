@@ -2,7 +2,12 @@ package com.example.ciudadalerta.viewmodel
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.ciudadalerta.CiudadAlertaApp
 import com.example.ciudadalerta.model.Usuario
 import com.example.ciudadalerta.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,5 +93,15 @@ class AuthViewModel(
     fun logout() {
         _usuarioActual.value = null
         _error.value = null
+    }
+
+    companion object {
+        /** Uso en Compose: viewModel(factory = AuthViewModel.Factory) */
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as CiudadAlertaApp
+                AuthViewModel(app.container.authRepository)
+            }
+        }
     }
 }
