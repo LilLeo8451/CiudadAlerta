@@ -62,4 +62,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp.logging.interceptor)
-}
+
+    // Coil: mostrar las fotos de los reportes en Compose
+    implementation(libs.coil.compose)
+}

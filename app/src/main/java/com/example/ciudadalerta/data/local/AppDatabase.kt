@@ -20,7 +20,7 @@ import com.example.ciudadalerta.data.local.entity.UsuarioEntity
         MultimediaEntity::class,
         NotificacionEntity::class
     ],
-    version = 1,
+    version = 2,                 // súbela cada vez que cambie una entidad
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -40,7 +40,10 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "ciudad_alerta.db"
-                ).build().also { INSTANCE = it }
+                )
+                    // Si cambia la versión, recrea la BD (los reportes se vuelven a bajar de la API)
+                    .fallbackToDestructiveMigration(true)
+                    .build().also { INSTANCE = it }
             }
     }
 }

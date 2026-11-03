@@ -10,11 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiConfig {
-    /**
-     * URL base de la Web API. DEBE terminar en "/".
-     *  - MockAPI:                      "https://<tu-id>.mockapi.io/api/v1/"
-     *  - json-server en el emulador:   "http://10.0.2.2:3000/"  (ver API.md)
-     */
     const val BASE_URL = "https://6ae178d0be3bc8fead98893d.mockapi.io/api/v1/"
 
     const val TIMEOUT_SEGUNDOS = 15L

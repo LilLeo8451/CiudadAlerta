@@ -15,6 +15,7 @@ import com.example.ciudadalerta.repository.NotificacionRepository
 import com.example.ciudadalerta.repository.NotificacionRepositoryImpl
 import com.example.ciudadalerta.repository.ReportRepository
 import com.example.ciudadalerta.repository.ReportRepositoryImpl
+import com.example.ciudadalerta.util.AlmacenFotos
 import com.example.ciudadalerta.util.PasswordHasher
 
 /**
@@ -34,8 +35,10 @@ class AppContainer(context: Context) {
         NotificacionRepositoryImpl(database.notificacionDao())
     }
 
+    private val almacenFotos = AlmacenFotos(context)
+
     val multimediaRepository: MultimediaRepository by lazy {
-        MultimediaRepositoryImpl(database.multimediaDao())
+        MultimediaRepositoryImpl(database.multimediaDao(), almacenFotos)
     }
 
     val reportRepository: ReportRepository by lazy {

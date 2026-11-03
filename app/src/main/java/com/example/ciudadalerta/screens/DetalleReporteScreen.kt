@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,6 +67,8 @@ fun DetalleReporteScreen(
     val reportes by viewModel.reportes.collectAsState()
     val reporte = reportes.find { it.id == reporteId }
     var confirmarEliminar by rememberSaveable { mutableStateOf(false) }
+    val fotos by remember(reporteId) { viewModel.fotosDe(reporteId) }
+        .collectAsState(initial = emptyList())
 
     Column(
         modifier = Modifier
@@ -123,6 +126,29 @@ fun DetalleReporteScreen(
                     }
                     InfoFila(R.string.label_reportado_por, autor)
                 }
+            }
+
+            // ---- Fotos ----
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(text = stringResource(R.string.label_fotos), style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            if (fotos.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.empty_fotos),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                // Solo el dueño puede quitar fotos, y solo mientras el reporte esté pendiente
+                val quitarFoto: ((Int) -> Unit)? =
+                    if (puedeEditar) { index -> viewModel.eliminarFoto(fotos[index]) } else null
+                GaleriaFotos(fotos = fotos.map { it.uri }, onQuitar = quitarFoto)
+            }
+            if (puedeEditar) {
+                Spacer(modifier = Modifier.height(12.dp))
+                BotonesAgregarFoto(
+                    crearUriCamara = viewModel::crearUriParaCamara,
+                    onFotoElegida = { uri -> viewModel.agregarFoto(reporte.id, uri) }
+                )
             }
 
             if (esAdmin) {
