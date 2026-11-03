@@ -5,13 +5,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -28,12 +33,14 @@ import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.Rol
 import com.example.ciudadalerta.model.Usuario
 import com.example.ciudadalerta.viewmodel.AuthViewModel
+import com.example.ciudadalerta.viewmodel.NotificacionViewModel
 
 object Rutas {
     const val LOGIN = "login"
     const val REGISTRO = "registro"
     const val FORMULARIO = "formulario"
     const val LISTA = "lista"
+    const val NOTIFICACIONES = "notificaciones"
     const val ADMIN_LISTA = "admin_lista"
     const val PERFIL = "perfil"
     const val DETALLE = "detalle/{id}"
@@ -51,6 +58,7 @@ private data class ItemBarra(
 private val itemsCiudadano = listOf(
     ItemBarra(Rutas.FORMULARIO, Icons.Filled.Add, R.string.nav_nuevo),
     ItemBarra(Rutas.LISTA, Icons.AutoMirrored.Filled.List, R.string.nav_mis_reportes),
+    ItemBarra(Rutas.NOTIFICACIONES, Icons.Filled.Notifications, R.string.nav_avisos),
     ItemBarra(Rutas.PERFIL, Icons.Filled.Person, R.string.nav_perfil)
 )
 
@@ -59,13 +67,19 @@ private val itemsAdmin = listOf(
     ItemBarra(Rutas.PERFIL, Icons.Filled.Person, R.string.nav_perfil)
 )
 
-private val rutasConBarra = setOf(Rutas.FORMULARIO, Rutas.LISTA, Rutas.ADMIN_LISTA, Rutas.PERFIL)
+private val rutasConBarra = setOf(
+    Rutas.FORMULARIO, Rutas.LISTA, Rutas.NOTIFICACIONES, Rutas.ADMIN_LISTA, Rutas.PERFIL
+)
 
 private fun rutaInicioPara(usuario: Usuario): String =
     if (usuario.rol == Rol.ADMIN) Rutas.ADMIN_LISTA else Rutas.FORMULARIO
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavigation(authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.Factory)) {
+fun AppNavigation(
+    authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.Factory),
+    notificacionViewModel: NotificacionViewModel = viewModel(factory = NotificacionViewModel.Factory)
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = backStackEntry?.destination?.route
@@ -73,6 +87,12 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel(factory = AuthViewMod
     val usuario by authViewModel.usuarioActual.collectAsState()
     val esAdmin = usuario?.rol == Rol.ADMIN
     val rutaInicio = if (esAdmin) Rutas.ADMIN_LISTA else Rutas.FORMULARIO
+    val noLeidas by notificacionViewModel.noLeidas.collectAsState()
+
+    // Los avisos son solo para ciudadanos: se le dice al ViewModel de quién son
+    LaunchedEffect(usuario?.id, esAdmin) {
+        notificacionViewModel.setUsuario(if (esAdmin) null else usuario?.id)
+    }
 
     // Al iniciar sesión / registrarse: ir a la pantalla principal del rol y sacar login del historial
     val irAInicio: (Usuario) -> Unit = { u ->
@@ -88,7 +108,15 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel(factory = AuthViewMod
                     val items = if (esAdmin) itemsAdmin else itemsCiudadano
                     items.forEach { item ->
                         NavigationBarItem(
-                            icon = { Icon(item.icono, contentDescription = null) },
+                            icon = {
+                                if (item.ruta == Rutas.NOTIFICACIONES && noLeidas > 0) {
+                                    BadgedBox(badge = { Badge { Text(noLeidas.toString()) } }) {
+                                        Icon(item.icono, contentDescription = null)
+                                    }
+                                } else {
+                                    Icon(item.icono, contentDescription = null)
+                                }
+                            },
                             label = { Text(stringResource(item.etiqueta)) },
                             selected = rutaActual == item.ruta,
                             onClick = {
@@ -132,6 +160,12 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel(factory = AuthViewMod
                 ListaScreen(
                     usuarioId = usuario?.id ?: 0,
                     onReporteClick = { id -> navController.navigate(Rutas.detalle(id)) }
+                )
+            }
+            composable(Rutas.NOTIFICACIONES) {
+                NotificacionesScreen(
+                    notificacionViewModel = notificacionViewModel,
+                    onAbrirReporte = { id -> navController.navigate(Rutas.detalle(id)) }
                 )
             }
 

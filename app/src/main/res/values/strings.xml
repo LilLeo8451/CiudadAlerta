@@ -89,4 +89,13 @@
     <string name="dialog_eliminar_titulo">¿Eliminar reporte?</string>
     <string name="dialog_eliminar_mensaje">Esta acción no se puede deshacer.</string>
     <string name="msg_reporte_actualizado">Reporte actualizado</string>
+
+    <!-- Notificaciones -->
+    <string name="nav_avisos">Avisos</string>
+    <string name="title_notificaciones">Notificaciones</string>
+    <string name="empty_notificaciones">Todavía no tienes notificaciones.</string>
+    <string name="btn_marcar_todas">Marcar todas como leídas</string>
+    <string name="notif_texto">Tu reporte de %1$s cambió a «%2$s»</string>
+    <string name="notif_texto_sin_categoria">Tu reporte cambió a «%1$s»</string>
+    <string name="cd_eliminar_notificacion">Eliminar notificación</string>
 </resources>
