@@ -98,4 +98,12 @@
     <string name="notif_texto">Tu reporte de %1$s cambió a «%2$s»</string>
     <string name="notif_texto_sin_categoria">Tu reporte cambió a «%1$s»</string>
     <string name="cd_eliminar_notificacion">Eliminar notificación</string>
+    <!-- Fotos -->
+    <string name="label_fotos">Fotos</string>
+    <string name="label_fotos_opcional">Fotos del problema (opcional)</string>
+    <string name="btn_tomar_foto">Tomar foto</string>
+    <string name="btn_galeria">Galería</string>
+    <string name="empty_fotos">Este reporte no tiene fotos.</string>
+    <string name="cd_foto_reporte">Foto del reporte</string>
+    <string name="cd_quitar_foto">Quitar foto</string>
 </resources>

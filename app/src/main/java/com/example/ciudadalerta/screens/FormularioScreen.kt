@@ -46,6 +46,7 @@ fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel(fact
     val descripcion by viewModel.descripcion.collectAsState()
     val ubicacionConfirmada by viewModel.ubicacionConfirmada.collectAsState()
     val hora by viewModel.hora.collectAsState()
+    val fotosNuevas by viewModel.fotosNuevas.collectAsState()
 
     val context = LocalContext.current
     val mensajeGuardado = stringResource(R.string.msg_reporte_guardado)
@@ -124,6 +125,22 @@ fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel(fact
                 onCheckedChange = { viewModel.ubicacionConfirmada.value = it }
             )
             Text(stringResource(R.string.label_confirmar_ubicacion))
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ---- Fotos (opcionales) ----
+        Text(text = stringResource(R.string.label_fotos_opcional))
+        Spacer(modifier = Modifier.height(8.dp))
+        BotonesAgregarFoto(
+            crearUriCamara = viewModel::crearUriParaCamara,
+            onFotoElegida = viewModel::agregarFotoNueva
+        )
+        if (fotosNuevas.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(12.dp))
+            GaleriaFotos(
+                fotos = fotosNuevas,
+                onQuitar = { index -> viewModel.quitarFotoNueva(fotosNuevas[index]) }
+            )
         }
         Spacer(modifier = Modifier.height(24.dp))
 
