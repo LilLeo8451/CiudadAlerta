@@ -2,11 +2,18 @@ package com.example.ciudadalerta.viewmodel
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.ciudadalerta.CiudadAlertaApp
 import com.example.ciudadalerta.model.Usuario
-import com.example.ciudadalerta.repository.UsuarioRepository
+import com.example.ciudadalerta.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 enum class AuthError {
     CAMPOS_VACIOS,
@@ -17,7 +24,9 @@ enum class AuthError {
     PASSWORDS_NO_COINCIDEN
 }
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _usuarioActual = MutableStateFlow<Usuario?>(null)
     val usuarioActual: StateFlow<Usuario?> = _usuarioActual.asStateFlow()
@@ -29,21 +38,56 @@ class AuthViewModel : ViewModel() {
         _error.value = null
     }
 
-    /** Devuelve el usuario si el login fue exitoso, o null y publica el error. */
-    fun login(correo: String, password: String): Usuario? {
-        if (correo.isBlank() || password.isBlank()) return falla(AuthError.CAMPOS_VACIOS)
-        val usuario = UsuarioRepository.login(correo, password)
-            ?: return falla(AuthError.CREDENCIALES_INVALIDAS)
-        return exito(usuario)
+    fun login(correo: String, password: String, onExito: (Usuario) -> Unit) {
+        if (correo.isBlank() || password.isBlank()) {
+            _error.value = AuthError.CAMPOS_VACIOS
+            return
+        }
+        viewModelScope.launch {
+            val usuario = authRepository.login(correo, password)
+            if (usuario == null) {
+                _error.value = AuthError.CREDENCIALES_INVALIDAS
+            } else {
+                _error.value = null
+                _usuarioActual.value = usuario
+                onExito(usuario)
+            }
+        }
     }
 
-    fun registrar(nombre: String, correo: String, password: String, confirmar: String): Usuario? {
-        if (nombre.isBlank() || correo.isBlank() || password.isBlank()) return falla(AuthError.CAMPOS_VACIOS)
-        if (!Patterns.EMAIL_ADDRESS.matcher(correo.trim()).matches()) return falla(AuthError.CORREO_INVALIDO)
-        if (password.length < 6) return falla(AuthError.PASSWORD_CORTA)
-        if (password != confirmar) return falla(AuthError.PASSWORDS_NO_COINCIDEN)
-        if (UsuarioRepository.existeCorreo(correo)) return falla(AuthError.CORREO_YA_REGISTRADO)
-        return exito(UsuarioRepository.registrar(nombre, correo, password))
+    fun registrar(
+        nombre: String,
+        correo: String,
+        password: String,
+        confirmar: String,
+        onExito: (Usuario) -> Unit
+    ) {
+        if (nombre.isBlank() || correo.isBlank() || password.isBlank()) {
+            _error.value = AuthError.CAMPOS_VACIOS
+            return
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(correo.trim()).matches()) {
+            _error.value = AuthError.CORREO_INVALIDO
+            return
+        }
+        if (password.length < 6) {
+            _error.value = AuthError.PASSWORD_CORTA
+            return
+        }
+        if (password != confirmar) {
+            _error.value = AuthError.PASSWORDS_NO_COINCIDEN
+            return
+        }
+        viewModelScope.launch {
+            val usuario = authRepository.registrar(nombre, correo, password)
+            if (usuario == null) {
+                _error.value = AuthError.CORREO_YA_REGISTRADO
+            } else {
+                _error.value = null
+                _usuarioActual.value = usuario
+                onExito(usuario)
+            }
+        }
     }
 
     fun logout() {
@@ -51,14 +95,13 @@ class AuthViewModel : ViewModel() {
         _error.value = null
     }
 
-    private fun falla(error: AuthError): Usuario? {
-        _error.value = error
-        return null
-    }
-
-    private fun exito(usuario: Usuario): Usuario {
-        _error.value = null
-        _usuarioActual.value = usuario
-        return usuario
+    companion object {
+        /** Uso en Compose: viewModel(factory = AuthViewModel.Factory) */
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as CiudadAlertaApp
+                AuthViewModel(app.container.authRepository)
+            }
+        }
     }
 }

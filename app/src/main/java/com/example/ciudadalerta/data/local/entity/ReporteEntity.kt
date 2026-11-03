@@ -16,6 +16,7 @@ data class ReporteEntity(
     val descripcion: String,
     val latitud: Double? = null,
     val longitud: Double? = null,
+    val ubicacionConfirmada: Boolean = false,  // se quita cuando haya GPS real
     val fecha: String,                         // dd/MM/yyyy
     val hora: String,                          // HH:mm
     val estatus: EstadoReporte = EstadoReporte.PENDIENTE,

@@ -106,7 +106,7 @@ fun RegistroScreen(
 
         Button(
             onClick = {
-                authViewModel.registrar(nombre, correo, password, confirmar)?.let(onRegistroExitoso)
+                authViewModel.registrar(nombre, correo, password, confirmar, onRegistroExitoso)
             },
             modifier = Modifier.fillMaxWidth()
         ) {

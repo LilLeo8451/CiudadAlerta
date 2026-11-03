@@ -79,4 +79,22 @@
 
     <!-- Profile -->
     <string name="btn_logout">Sign out</string>
+    <!-- Edit / delete -->
+    <string name="btn_editar">Edit</string>
+    <string name="btn_eliminar">Delete</string>
+    <string name="btn_cancelar">Cancel</string>
+    <string name="btn_guardar_cambios">Save changes</string>
+    <string name="title_editar_reporte">Edit report</string>
+    <string name="dialog_eliminar_titulo">Delete report?</string>
+    <string name="dialog_eliminar_mensaje">This action cannot be undone.</string>
+    <string name="msg_reporte_actualizado">Report updated</string>
+
+    <!-- Notifications -->
+    <string name="nav_avisos">Alerts</string>
+    <string name="title_notificaciones">Notifications</string>
+    <string name="empty_notificaciones">You don\'t have any notifications yet.</string>
+    <string name="btn_marcar_todas">Mark all as read</string>
+    <string name="notif_texto">Your %1$s report changed to “%2$s”</string>
+    <string name="notif_texto_sin_categoria">Your report changed to “%1$s”</string>
+    <string name="cd_eliminar_notificacion">Delete notification</string>
 </resources>
