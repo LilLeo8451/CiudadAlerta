@@ -44,8 +44,8 @@ class ReportRepositoryImpl(
         // Conservamos lo que el modelo de dominio no trae
         local.actualizar(
             reporte.toEntity(
-                latitud = actual.latitud,
-                longitud = actual.longitud,
+                latitud = reporte.latitud ?: actual.latitud,
+                longitud = reporte.longitud ?: actual.longitud,
                 remoteId = actual.remoteId
             )
         )

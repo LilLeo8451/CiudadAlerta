@@ -9,6 +9,8 @@ data class Reporte(
     val categoria: CategoriaReporte,
     val descripcion: String,
     val ubicacionConfirmada: Boolean,
+    val latitud: Double? = null,
+    val longitud: Double? = null,
     val fecha: String,          // dd/MM/yyyy
     val hora: String,           // HH:mm
     val estatus: EstadoReporte = EstadoReporte.PENDIENTE,
