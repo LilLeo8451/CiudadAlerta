@@ -1,6 +1,9 @@
 package com.example.ciudadalerta.screens
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -14,15 +17,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -105,29 +115,182 @@ fun AppNavigation(
         }
     }
 
+    // Pantalla pequeña: barra inferior. Pantalla grande: menú lateral y lista + detalle
+    val tamano = rememberTamanoPantalla()
+    val usarMenuLateral = tamano != TamanoPantalla.COMPACTA
+    val dosPaneles = tamano == TamanoPantalla.EXPANDIDA
+    val mostrarMenu = rutaActual in rutasConBarra
+    val items = if (esAdmin) itemsAdmin else itemsCiudadano
+    val usuarioId = usuario?.id ?: 0
+
+    val irASeccion: (String) -> Unit = { ruta ->
+        navController.navigate(ruta) {
+            popUpTo(rutaInicio) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+    val abrirDetalle: (Int) -> Unit = { id -> navController.navigate(Rutas.detalle(id)) }
+    val abrirEditar: (Int) -> Unit = { id -> navController.navigate(Rutas.editar(id)) }
+
     Scaffold(
         bottomBar = {
-            if (rutaActual in rutasConBarra) {
+            if (mostrarMenu && !usarMenuLateral) {
                 NavigationBar {
-                    val items = if (esAdmin) itemsAdmin else itemsCiudadano
                     items.forEach { item ->
                         NavigationBarItem(
-                            icon = {
-                                if (item.ruta == Rutas.NOTIFICACIONES && noLeidas > 0) {
-                                    BadgedBox(badge = { Badge { Text(noLeidas.toString()) } }) {
-                                        Icon(item.icono, contentDescription = null)
-                                    }
-                                } else {
-                                    Icon(item.icono, contentDescription = null)
-                                }
-                            },
+                            icon = { IconoMenu(item, noLeidas) },
                             label = { Text(stringResource(item.etiqueta)) },
                             selected = rutaActual == item.ruta,
-                            onClick = {
-                                navController.navigate(item.ruta) {
-                                    popUpTo(rutaInicio) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
+                            onClick = { irASeccion(item.ruta) }
+                        )
+                    }
+                }
+            }
+        }
+    ) { paddingValues ->
+        Row(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            if (mostrarMenu && usarMenuLateral) {
+                NavigationRail {
+                    items.forEach { item ->
+                        NavigationRailItem(
+                            icon = { IconoMenu(item, noLeidas) },
+                            label = { Text(stringResource(item.etiqueta)) },
+                            selected = rutaActual == item.ruta,
+                            onClick = { irASeccion(item.ruta) }
+                        )
+                    }
+                }
+            }
+
+            NavHost(
+                navController = navController,
+                startDestination = Rutas.LOGIN,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            ) {
+                composable(Rutas.LOGIN) {
+                    ContenidoCentrado(anchoMaximo = 480.dp) {
+                        LoginScreen(
+                            authViewModel = authViewModel,
+                            onLoginExitoso = irAInicio,
+                            onIrARegistro = { navController.navigate(Rutas.REGISTRO) }
+                        )
+                    }
+                }
+                composable(Rutas.REGISTRO) {
+                    ContenidoCentrado(anchoMaximo = 480.dp) {
+                        RegistroScreen(
+                            authViewModel = authViewModel,
+                            onRegistroExitoso = irAInicio,
+                            onVolver = { navController.popBackStack() }
+                        )
+                    }
+                }
+
+                // --- Ciudadano ---
+                composable(Rutas.FORMULARIO) {
+                    ContenidoCentrado {
+                        FormularioScreen(usuarioId = usuarioId)
+                    }
+                }
+                composable(Rutas.LISTA) {
+                    ListaConDetalle(
+                        dosPaneles = dosPaneles,
+                        esAdmin = esAdmin,
+                        usuarioId = usuarioId,
+                        onAbrirDetalle = abrirDetalle,
+                        onEditar = abrirEditar
+                    ) { seleccionado, onClick ->
+                        ListaScreen(
+                            usuarioId = usuarioId,
+                            onReporteClick = onClick,
+                            reporteSeleccionado = seleccionado
+                        )
+                    }
+                }
+                composable(Rutas.NOTIFICACIONES) {
+                    ContenidoCentrado {
+                        NotificacionesScreen(
+                            notificacionViewModel = notificacionViewModel,
+                            onAbrirReporte = abrirDetalle
+                        )
+                    }
+                }
+
+                // --- Administrador / trabajador ---
+                composable(Rutas.ADMIN_LISTA) {
+                    ListaConDetalle(
+                        dosPaneles = dosPaneles,
+                        esAdmin = esAdmin,
+                        usuarioId = usuarioId,
+                        onAbrirDetalle = abrirDetalle,
+                        onEditar = abrirEditar
+                    ) { seleccionado, onClick ->
+                        AdminListaScreen(
+                            onReporteClick = onClick,
+                            reporteSeleccionado = seleccionado
+                        )
+                    }
+                }
+
+                // --- Compartidas ---
+                // Reportes de la ciudad
+                composable(Rutas.CIUDAD) {
+                    ListaConDetalle(
+                        dosPaneles = dosPaneles,
+                        esAdmin = esAdmin,
+                        usuarioId = usuarioId,
+                        onAbrirDetalle = abrirDetalle,
+                        onEditar = abrirEditar
+                    ) { seleccionado, onClick ->
+                        ReportesCiudadScreen(
+                            usuarioActualId = usuarioId,
+                            onReporteClick = onClick,
+                            reporteSeleccionado = seleccionado
+                        )
+                    }
+                }
+                composable(
+                    route = Rutas.DETALLE,
+                    arguments = listOf(navArgument("id") { type = NavType.IntType })
+                ) { entry ->
+                    val id = entry.arguments?.getInt("id") ?: 0
+                    ContenidoCentrado(anchoMaximo = 720.dp) {
+                        DetalleReporteScreen(
+                            reporteId = id,
+                            esAdmin = esAdmin,
+                            usuarioActualId = usuarioId,
+                            onVolver = { navController.popBackStack() },
+                            onEditar = { abrirEditar(id) }
+                        )
+                    }
+                }
+                composable(
+                    route = Rutas.EDITAR,
+                    arguments = listOf(navArgument("id") { type = NavType.IntType })
+                ) { entry ->
+                    val id = entry.arguments?.getInt("id") ?: 0
+                    ContenidoCentrado {
+                        EditarReporteScreen(
+                            reporteId = id,
+                            onVolver = { navController.popBackStack() }
+                        )
+                    }
+                }
+                composable(Rutas.PERFIL) {
+                    ContenidoCentrado {
+                        PerfilScreen(
+                            usuario = usuario,
+                            onCerrarSesion = {
+                                authViewModel.logout()
+                                navController.navigate(Rutas.LOGIN) {
+                                    popUpTo(navController.graph.id) { inclusive = true }
                                 }
                             }
                         )
@@ -135,93 +298,57 @@ fun AppNavigation(
                 }
             }
         }
-    ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = Rutas.LOGIN,
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            composable(Rutas.LOGIN) {
-                LoginScreen(
-                    authViewModel = authViewModel,
-                    onLoginExitoso = irAInicio,
-                    onIrARegistro = { navController.navigate(Rutas.REGISTRO) }
-                )
-            }
-            composable(Rutas.REGISTRO) {
-                RegistroScreen(
-                    authViewModel = authViewModel,
-                    onRegistroExitoso = irAInicio,
-                    onVolver = { navController.popBackStack() }
-                )
-            }
+    }
+}
 
-            // --- Ciudadano ---
-            composable(Rutas.FORMULARIO) {
-                FormularioScreen(usuarioId = usuario?.id ?: 0)
-            }
-            composable(Rutas.LISTA) {
-                ListaScreen(
-                    usuarioId = usuario?.id ?: 0,
-                    onReporteClick = { id -> navController.navigate(Rutas.detalle(id)) }
-                )
-            }
-            composable(Rutas.NOTIFICACIONES) {
-                NotificacionesScreen(
-                    notificacionViewModel = notificacionViewModel,
-                    onAbrirReporte = { id -> navController.navigate(Rutas.detalle(id)) }
-                )
-            }
+// Icono del menú (con el contador de avisos sin leer)
+@Composable
+private fun IconoMenu(item: ItemBarra, noLeidas: Int) {
+    if (item.ruta == Rutas.NOTIFICACIONES && noLeidas > 0) {
+        BadgedBox(badge = { Badge { Text(noLeidas.toString()) } }) {
+            Icon(item.icono, contentDescription = null)
+        }
+    } else {
+        Icon(item.icono, contentDescription = null)
+    }
+}
 
-            // --- Administrador / trabajador ---
-            composable(Rutas.ADMIN_LISTA) {
-                AdminListaScreen(
-                    onReporteClick = { id -> navController.navigate(Rutas.detalle(id)) }
-                )
-            }
+// Celular: al tocar un reporte se abre el detalle en otra pantalla.
+// Pantalla grande: la lista y el detalle se ven lado a lado
+@Composable
+private fun ListaConDetalle(
+    dosPaneles: Boolean,
+    esAdmin: Boolean,
+    usuarioId: Int,
+    onAbrirDetalle: (Int) -> Unit,
+    onEditar: (Int) -> Unit,
+    lista: @Composable (seleccionado: Int?, onClick: (Int) -> Unit) -> Unit
+) {
+    var seleccionado by rememberSaveable { mutableStateOf<Int?>(null) }
 
-            // --- Compartidas ---
-            // Reportes de la ciudad
-            composable(Rutas.CIUDAD) {
-                ReportesCiudadScreen(
-                    usuarioActualId = usuario?.id ?: 0,
-                    onReporteClick = { id -> navController.navigate(Rutas.detalle(id)) }
-                )
-            }
-            composable(
-                route = Rutas.DETALLE,
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) { entry ->
-                val id = entry.arguments?.getInt("id") ?: 0
-                DetalleReporteScreen(
-                    reporteId = id,
-                    esAdmin = esAdmin,
-                    usuarioActualId = usuario?.id ?: 0,
-                    onVolver = { navController.popBackStack() },
-                    onEditar = { navController.navigate(Rutas.editar(id)) }
-                )
-            }
-            composable(
-                route = Rutas.EDITAR,
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) { entry ->
-                val id = entry.arguments?.getInt("id") ?: 0
-                EditarReporteScreen(
-                    reporteId = id,
-                    onVolver = { navController.popBackStack() }
-                )
-            }
-            composable(Rutas.PERFIL) {
-                PerfilScreen(
-                    usuario = usuario,
-                    onCerrarSesion = {
-                        authViewModel.logout()
-                        navController.navigate(Rutas.LOGIN) {
-                            popUpTo(navController.graph.id) { inclusive = true }
-                        }
-                    }
-                )
+    if (!dosPaneles) {
+        lista(null, onAbrirDetalle)
+        return
+    }
+
+    DosPaneles(
+        izquierda = { lista(seleccionado) { id -> seleccionado = id } },
+        derecha = {
+            val id = seleccionado
+            if (id == null) {
+                PanelSinSeleccion()
+            } else {
+                key(id) {
+                    DetalleReporteScreen(
+                        reporteId = id,
+                        esAdmin = esAdmin,
+                        usuarioActualId = usuarioId,
+                        onVolver = { seleccionado = null },
+                        onEditar = { onEditar(id) },
+                        mostrarVolver = false
+                    )
+                }
             }
         }
-    }
+    )
 }

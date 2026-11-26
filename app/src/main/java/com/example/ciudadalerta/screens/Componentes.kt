@@ -47,10 +47,20 @@ fun EstadoBadge(estado: EstadoReporte, modifier: Modifier = Modifier) {
 /** Tarjeta de reporte reutilizada en "Mis reportes" (ciudadano) y en la lista del administrador. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReporteCard(reporte: Reporte, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun ReporteCard(
+    reporte: Reporte,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    seleccionado: Boolean = false   // resaltado en modo lista + detalle
+) {
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
+        colors = if (seleccionado) {
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+        } else {
+            CardDefaults.cardColors()
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

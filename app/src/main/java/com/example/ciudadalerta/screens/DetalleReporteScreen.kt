@@ -63,6 +63,7 @@ fun DetalleReporteScreen(
     usuarioActualId: Int,
     onVolver: () -> Unit,
     onEditar: () -> Unit,
+    mostrarVolver: Boolean = true,   // false cuando se ve como panel junto a la lista
     viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)
 ) {
     val reportes by viewModel.reportes.collectAsState()
@@ -78,11 +79,13 @@ fun DetalleReporteScreen(
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onVolver) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.cd_volver)
-                )
+            if (mostrarVolver) {
+                IconButton(onClick = onVolver) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.cd_volver)
+                    )
+                }
             }
             Text(text = stringResource(R.string.title_detalle), style = MaterialTheme.typography.headlineSmall)
         }
