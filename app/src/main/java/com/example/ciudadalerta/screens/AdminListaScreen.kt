@@ -32,6 +32,8 @@ fun AdminListaScreen(
 ) {
     val reportes by viewModel.reportesFiltrados.collectAsState()
     val filtro by viewModel.filtroCategoria.collectAsState()
+    val sincronizando by viewModel.sincronizando.collectAsState()
+    val sinConexion by viewModel.sinConexion.collectAsState()
 
     Column(
         modifier = Modifier
@@ -59,16 +61,26 @@ fun AdminListaScreen(
         }
         Spacer(modifier = Modifier.height(8.dp))
 
+        AvisoSinConexion(visible = sinConexion, onReintentar = viewModel::sincronizar)
+
         Text(
             text = stringResource(R.string.label_total_reportes, reportes.size),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (reportes.isEmpty()) {
-            Text(text = stringResource(R.string.empty_reportes_filtro))
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        ContenedorRefrescable(
+            sincronizando = sincronizando,
+            onRefrescar = viewModel::sincronizar,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (reportes.isEmpty()) {
+                    item { Text(text = stringResource(R.string.empty_reportes_filtro)) }
+                }
                 items(reportes, key = { it.id }) { reporte ->
                     ReporteCard(reporte = reporte, onClick = { onReporteClick(reporte.id) })
                 }

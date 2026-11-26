@@ -106,4 +106,15 @@
     <string name="empty_fotos">Este reporte no tiene fotos.</string>
     <string name="cd_foto_reporte">Foto del reporte</string>
     <string name="cd_quitar_foto">Quitar foto</string>
+    <!-- Reportes de la ciudad -->
+    <string name="nav_ciudad">Ciudad</string>
+    <string name="title_reportes_ciudad">Reportes de la ciudad</string>
+    <string name="subtitle_reportes_ciudad">Lo que reporta la gente, más recientes primero</string>
+    <string name="empty_reportes_ciudad">Todavía no hay reportes en la ciudad.</string>
+    <string name="label_autor_tu">Tú</string>
+    <string name="label_autor_ciudadano">Ciudadano #%1$d</string>
+
+    <!-- Sincronización con la Web API -->
+    <string name="msg_sin_conexion">Sin conexión con el servidor. Se muestran los datos guardados; tus cambios se subirán al reconectar.</string>
+    <string name="btn_reintentar">Reintentar</string>
 </resources>

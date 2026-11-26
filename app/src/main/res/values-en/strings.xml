@@ -105,4 +105,15 @@
     <string name="empty_fotos">This report has no photos.</string>
     <string name="cd_foto_reporte">Report photo</string>
     <string name="cd_quitar_foto">Remove photo</string>
+    <!-- City reports -->
+    <string name="nav_ciudad">City</string>
+    <string name="title_reportes_ciudad">City reports</string>
+    <string name="subtitle_reportes_ciudad">What people are reporting, newest first</string>
+    <string name="empty_reportes_ciudad">There are no reports in the city yet.</string>
+    <string name="label_autor_tu">You</string>
+    <string name="label_autor_ciudadano">Citizen #%1$d</string>
+
+    <!-- Sync with the Web API -->
+    <string name="msg_sin_conexion">Can\'t reach the server. Showing saved data; your changes will upload when you reconnect.</string>
+    <string name="btn_reintentar">Retry</string>
 </resources>

@@ -43,17 +43,13 @@ import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.example.ciudadalerta.R
 
-/**
- * Botones "Tomar foto" (cámara) y "Galería" (selector de fotos del sistema).
- * No necesitan permisos: la cámara la abre otra app y el selector de fotos no pide acceso a la galería.
- */
+// Botones Tomar foto y Galería
 @Composable
 fun BotonesAgregarFoto(
     crearUriCamara: () -> Uri,
     onFotoElegida: (Uri) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Se guarda para saber dónde quedó la foto cuando la cámara regrese (sobrevive a girar la pantalla)
     var uriCamara by rememberSaveable { mutableStateOf<Uri?>(null) }
 
     val camara = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { tomada ->
@@ -90,11 +86,6 @@ fun BotonesAgregarFoto(
     }
 }
 
-/**
- * Fila horizontal de miniaturas. Al tocar una se ve en grande.
- * @param fotos lo que Coil sabe cargar: Uri o String ("file:///...").
- * @param onQuitar si no es null, cada miniatura muestra una X para quitarla.
- */
 @Composable
 fun GaleriaFotos(
     fotos: List<Any>,
