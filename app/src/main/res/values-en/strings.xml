@@ -116,4 +116,6 @@
     <!-- Sync with the Web API -->
     <string name="msg_sin_conexion">Can\'t reach the server. Showing saved data; your changes will upload when you reconnect.</string>
     <string name="btn_reintentar">Retry</string>
+    <!-- Large screens -->
+    <string name="msg_selecciona_reporte">Select a report from the list to see its details</string>
 </resources>

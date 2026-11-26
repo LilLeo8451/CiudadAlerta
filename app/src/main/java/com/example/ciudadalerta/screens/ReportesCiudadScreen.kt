@@ -42,6 +42,7 @@ import com.example.ciudadalerta.viewmodel.ReportesCiudadViewModel
 fun ReportesCiudadScreen(
     usuarioActualId: Int,
     onReporteClick: (Int) -> Unit,
+    reporteSeleccionado: Int? = null,
     viewModel: ReportesCiudadViewModel = viewModel(factory = ReportesCiudadViewModel.Factory)
 ) {
     val reportes by viewModel.reportes.collectAsState()
@@ -104,6 +105,7 @@ fun ReportesCiudadScreen(
                     ReporteCiudadCard(
                         item = item,
                         esMio = item.reporte.usuarioId == usuarioActualId,
+                        seleccionado = item.reporte.id == reporteSeleccionado,
                         onClick = { onReporteClick(item.reporte.id) }
                     )
                 }
@@ -114,7 +116,12 @@ fun ReportesCiudadScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReporteCiudadCard(item: ReporteConAutor, esMio: Boolean, onClick: () -> Unit) {
+private fun ReporteCiudadCard(
+    item: ReporteConAutor,
+    esMio: Boolean,
+    seleccionado: Boolean,
+    onClick: () -> Unit
+) {
     val reporte = item.reporte
     val autor = when {
         esMio -> stringResource(R.string.label_autor_tu)
@@ -125,6 +132,11 @@ private fun ReporteCiudadCard(item: ReporteConAutor, esMio: Boolean, onClick: ()
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
+        colors = if (seleccionado) {
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+        } else {
+            CardDefaults.cardColors()
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

@@ -25,6 +25,7 @@ import com.example.ciudadalerta.viewmodel.ReportViewModel
 fun ListaScreen(
     usuarioId: Int,
     onReporteClick: (Int) -> Unit,
+    reporteSeleccionado: Int? = null,
     viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)
 ) {
     val todos by viewModel.reportes.collectAsState()
@@ -57,7 +58,11 @@ fun ListaScreen(
                     item { Text(text = stringResource(R.string.empty_mis_reportes)) }
                 }
                 items(mios, key = { it.id }) { reporte ->
-                    ReporteCard(reporte = reporte, onClick = { onReporteClick(reporte.id) })
+                    ReporteCard(
+                        reporte = reporte,
+                        onClick = { onReporteClick(reporte.id) },
+                        seleccionado = reporte.id == reporteSeleccionado
+                    )
                 }
             }
         }

@@ -28,6 +28,7 @@ import com.example.ciudadalerta.viewmodel.AdminViewModel
 @Composable
 fun AdminListaScreen(
     onReporteClick: (Int) -> Unit,
+    reporteSeleccionado: Int? = null,
     viewModel: AdminViewModel = viewModel(factory = AdminViewModel.Factory)
 ) {
     val reportes by viewModel.reportesFiltrados.collectAsState()
@@ -82,7 +83,11 @@ fun AdminListaScreen(
                     item { Text(text = stringResource(R.string.empty_reportes_filtro)) }
                 }
                 items(reportes, key = { it.id }) { reporte ->
-                    ReporteCard(reporte = reporte, onClick = { onReporteClick(reporte.id) })
+                    ReporteCard(
+                        reporte = reporte,
+                        onClick = { onReporteClick(reporte.id) },
+                        seleccionado = reporte.id == reporteSeleccionado
+                    )
                 }
             }
         }

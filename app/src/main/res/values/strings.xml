@@ -117,4 +117,6 @@
     <!-- Sincronización con la Web API -->
     <string name="msg_sin_conexion">Sin conexión con el servidor. Se muestran los datos guardados; tus cambios se subirán al reconectar.</string>
     <string name="btn_reintentar">Reintentar</string>
+    <!-- Pantallas grandes -->
+    <string name="msg_selecciona_reporte">Selecciona un reporte de la lista para ver su detalle</string>
 </resources>
