@@ -11,10 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * Fotos de los reportes: el archivo vive en el almacenamiento privado de la app (AlmacenFotos)
- * y Room guarda la ruta. Por ahora no se suben a la Web API (sincronizado = false).
- */
+// Fotos de los reportes: el archivo vive en el almacenamiento privado de la app
 class MultimediaRepositoryImpl(
     private val dao: MultimediaDao,
     private val almacen: AlmacenFotos

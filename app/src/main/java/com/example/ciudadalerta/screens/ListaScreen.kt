@@ -28,6 +28,8 @@ fun ListaScreen(
     viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)
 ) {
     val todos by viewModel.reportes.collectAsState()
+    val sincronizando by viewModel.sincronizando.collectAsState()
+    val sinConexion by viewModel.sinConexion.collectAsState()
     val mios = remember(todos, usuarioId) {
         todos.filter { it.usuarioId == usuarioId }.sortedByDescending { it.id }
     }
@@ -40,10 +42,20 @@ fun ListaScreen(
         Text(text = stringResource(R.string.title_my_reports), style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (mios.isEmpty()) {
-            Text(text = stringResource(R.string.empty_mis_reportes))
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        AvisoSinConexion(visible = sinConexion, onReintentar = viewModel::sincronizar)
+
+        ContenedorRefrescable(
+            sincronizando = sincronizando,
+            onRefrescar = viewModel::sincronizar,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (mios.isEmpty()) {
+                    item { Text(text = stringResource(R.string.empty_mis_reportes)) }
+                }
                 items(mios, key = { it.id }) { reporte ->
                     ReporteCard(reporte = reporte, onClick = { onReporteClick(reporte.id) })
                 }

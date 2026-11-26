@@ -128,7 +128,7 @@ fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel(fact
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ---- Fotos (opcionales) ----
+        //Fotos (opcionales)
         Text(text = stringResource(R.string.label_fotos_opcional))
         Spacer(modifier = Modifier.height(8.dp))
         BotonesAgregarFoto(

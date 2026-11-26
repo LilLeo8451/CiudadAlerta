@@ -15,6 +15,7 @@ import com.example.ciudadalerta.model.Reporte
 import com.example.ciudadalerta.repository.AuthRepository
 import com.example.ciudadalerta.repository.MultimediaRepository
 import com.example.ciudadalerta.repository.ReportRepository
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,7 +35,7 @@ class ReportViewModel(
     private val multimediaRepository: MultimediaRepository
 ) : ViewModel() {
 
-    /** Viene de Room: se actualiza solo al crear, editar, borrar o sincronizar. */
+    // Viene de Room, se actualiza solo al crear, editar, borrar o sincronizar
     val reportes: StateFlow<List<Reporte>> = repository.reportes
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
@@ -43,11 +45,11 @@ class ReportViewModel(
     val ubicacionConfirmada = MutableStateFlow(false)
     val hora = MutableStateFlow("12:00")
 
-    /** Fotos elegidas en el formulario que todavía no se guardan (el reporte aún no tiene id). */
+    // Fotos elegidas en el formulario que todavía no se guardan
     private val _fotosNuevas = MutableStateFlow<List<Uri>>(emptyList())
     val fotosNuevas: StateFlow<List<Uri>> = _fotosNuevas.asStateFlow()
 
-    // Estado de la conexión con la Web API (para mostrar un indicador o un mensaje en la UI)
+    // Estado de la conexión con la Web API
     private val _sincronizando = MutableStateFlow(false)
     val sincronizando: StateFlow<Boolean> = _sincronizando.asStateFlow()
 
@@ -72,7 +74,6 @@ class ReportViewModel(
         viewModelScope.launch {
             val reporteId = repository.crear(nuevo)
             fotos.forEach { uri ->
-                // Si una foto falla (p. ej. la borraron de la galería) se guardan las demás
                 runCatching { multimediaRepository.agregarFoto(reporteId, uri) }
             }
         }
@@ -91,12 +92,14 @@ class ReportViewModel(
 
     fun eliminarReporte(id: Int) {
         viewModelScope.launch {
-            multimediaRepository.eliminarArchivosDeReporte(id)
-            repository.eliminar(id)
+            // Para que el borrado no se cancele al cerrar el detalle
+            withContext(NonCancellable) {
+                multimediaRepository.eliminarArchivosDeReporte(id)
+                repository.eliminar(id)
+            }
         }
     }
 
-    // ---------- Fotos (multimedia) ----------
 
     fun crearUriParaCamara(): Uri = multimediaRepository.crearUriParaCamara()
 
@@ -111,7 +114,7 @@ class ReportViewModel(
     fun fotosDe(reporteId: Int): Flow<List<Multimedia>> =
         multimediaRepository.observarPorReporte(reporteId)
 
-    /** Agregar una foto a un reporte que ya existe (desde el detalle). */
+    // Agregar una foto a un reporte que ya existe
     fun agregarFoto(reporteId: Int, uri: Uri) {
         viewModelScope.launch { runCatching { multimediaRepository.agregarFoto(reporteId, uri) } }
     }
@@ -120,7 +123,7 @@ class ReportViewModel(
         viewModelScope.launch { multimediaRepository.eliminar(foto) }
     }
 
-    /** Recuperar desde la Web API (también se llama sola al abrir la pantalla). */
+    // Recuperar desde la Web API
     fun sincronizar() {
         if (_sincronizando.value) return
         viewModelScope.launch {
@@ -134,7 +137,6 @@ class ReportViewModel(
         authRepository.buscarPorId(usuarioId)?.nombre ?: "—"
 
     companion object {
-        /** Uso en Compose: viewModel(factory = ReportViewModel.Factory) */
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as CiudadAlertaApp

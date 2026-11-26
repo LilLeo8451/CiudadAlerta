@@ -5,11 +5,7 @@ import com.example.ciudadalerta.data.remote.dto.ReporteDto
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 
-/**
- * Fuente REMOTA de reportes. Envuelve a Retrofit y nunca lanza excepciones de red:
- * siempre regresa Result.success / Result.failure para que el repositorio decida qué hacer
- * (por ejemplo, dejar el reporte como "pendiente de sincronizar" si no hay internet).
- */
+// Fuente REMOTA de reportes
 class ReportRemoteDataSource(private val api: ReporteApiService) {
 
     suspend fun listar(): Result<List<ReporteDto>> = llamadaSegura { api.listar() }
@@ -31,13 +27,9 @@ class ReportRemoteDataSource(private val api: ReporteApiService) {
     }
 }
 
-/** true si el error fue un 404 del servidor (el recurso no existe allá). */
+//true si el error fue un 404 del servidor
 fun Throwable.esNoEncontrado(): Boolean = this is HttpException && code() == 404
 
-/**
- * Ejecuta la petición y convierte cualquier error (sin internet, timeout, HTTP 4xx/5xx,
- * JSON mal formado) en Result.failure. La cancelación de corrutinas se deja pasar.
- */
 private suspend fun <T> llamadaSegura(peticion: suspend () -> T): Result<T> =
     try {
         Result.success(peticion())

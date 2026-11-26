@@ -19,7 +19,7 @@ object NetworkModule {
 
     private val gson: Gson = GsonBuilder().create()
 
-    /** Imprime en Logcat (tag "okhttp.OkHttpClient") cada petición y respuesta con su JSON. */
+    // Imprime en Logcat cada petición y respuesta con su JSON
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }

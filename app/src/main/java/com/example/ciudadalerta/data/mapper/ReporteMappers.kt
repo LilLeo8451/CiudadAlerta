@@ -6,14 +6,7 @@ import com.example.ciudadalerta.model.CategoriaReporte
 import com.example.ciudadalerta.model.EstadoReporte
 import com.example.ciudadalerta.model.Reporte
 
-/*
- * Conversión entre las 3 representaciones de un reporte:
- *   Reporte        → modelo que usan la UI y los ViewModels
- *   ReporteEntity  → fila de Room (id local + sincronizado + remoteId)
- *   ReporteDto     → JSON de la Web API (su "id" es el remoteId)
- */
-
-// ---------- Room ↔ dominio ----------
+// Room <> dominio
 
 fun ReporteEntity.toDomain(): Reporte = Reporte(
     id = id,
@@ -45,7 +38,7 @@ fun Reporte.toEntity(
     remoteId = remoteId
 )
 
-// ---------- Room ↔ Web API ----------
+// Room <> Web API
 
 fun ReporteEntity.toDto(): ReporteDto = ReporteDto(
     id = remoteId,
@@ -60,10 +53,6 @@ fun ReporteEntity.toDto(): ReporteDto = ReporteDto(
     usuarioId = usuarioId
 )
 
-/**
- * Convierte lo que llegó del servidor a una fila de Room ya sincronizada.
- * Regresa null si el JSON viene incompleto o con una categoría desconocida (se ignora ese registro).
- */
 fun ReporteDto.toEntityOrNull(localId: Int = 0): ReporteEntity? {
     val remoteId = id ?: return null
     val categoria = enumOrNull<CategoriaReporte>(categoria) ?: return null

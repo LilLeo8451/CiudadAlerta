@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Badge
@@ -40,6 +41,7 @@ object Rutas {
     const val REGISTRO = "registro"
     const val FORMULARIO = "formulario"
     const val LISTA = "lista"
+    const val CIUDAD = "ciudad"
     const val NOTIFICACIONES = "notificaciones"
     const val ADMIN_LISTA = "admin_lista"
     const val PERFIL = "perfil"
@@ -58,17 +60,19 @@ private data class ItemBarra(
 private val itemsCiudadano = listOf(
     ItemBarra(Rutas.FORMULARIO, Icons.Filled.Add, R.string.nav_nuevo),
     ItemBarra(Rutas.LISTA, Icons.AutoMirrored.Filled.List, R.string.nav_mis_reportes),
+    ItemBarra(Rutas.CIUDAD, Icons.Filled.LocationCity, R.string.nav_ciudad),
     ItemBarra(Rutas.NOTIFICACIONES, Icons.Filled.Notifications, R.string.nav_avisos),
     ItemBarra(Rutas.PERFIL, Icons.Filled.Person, R.string.nav_perfil)
 )
 
 private val itemsAdmin = listOf(
     ItemBarra(Rutas.ADMIN_LISTA, Icons.AutoMirrored.Filled.List, R.string.nav_reportes),
+    ItemBarra(Rutas.CIUDAD, Icons.Filled.LocationCity, R.string.nav_ciudad),
     ItemBarra(Rutas.PERFIL, Icons.Filled.Person, R.string.nav_perfil)
 )
 
 private val rutasConBarra = setOf(
-    Rutas.FORMULARIO, Rutas.LISTA, Rutas.NOTIFICACIONES, Rutas.ADMIN_LISTA, Rutas.PERFIL
+    Rutas.FORMULARIO, Rutas.LISTA, Rutas.CIUDAD, Rutas.NOTIFICACIONES, Rutas.ADMIN_LISTA, Rutas.PERFIL
 )
 
 private fun rutaInicioPara(usuario: Usuario): String =
@@ -177,6 +181,13 @@ fun AppNavigation(
             }
 
             // --- Compartidas ---
+            // Reportes de la ciudad
+            composable(Rutas.CIUDAD) {
+                ReportesCiudadScreen(
+                    usuarioActualId = usuario?.id ?: 0,
+                    onReporteClick = { id -> navController.navigate(Rutas.detalle(id)) }
+                )
+            }
             composable(
                 route = Rutas.DETALLE,
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
