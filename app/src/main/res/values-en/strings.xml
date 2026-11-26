@@ -50,7 +50,13 @@
     <string name="label_hora_avistamiento">Time spotted: %1$s</string>
     <string name="btn_elegir_hora">Pick time</string>
     <string name="btn_aceptar">OK</string>
-    <string name="label_confirmar_ubicacion">I confirm I am at the incident location</string>
+    <string name="label_ubicacion_reporte">Problem location</string>
+    <string name="btn_usar_ubicacion">Use my current location</string>
+    <string name="btn_actualizar_ubicacion">Update location</string>
+    <string name="msg_error_ubicacion">Couldn\'t get your location. Make sure GPS is on.</string>
+    <string name="msg_permiso_ubicacion">Location permission is needed to mark where the problem is.</string>
+    <string name="label_sin_ubicacion">No location</string>
+    <string name="btn_ver_mapa">View on map</string>
     <string name="btn_save">Save Report</string>
     <string name="msg_reporte_guardado">Report saved</string>
 
@@ -70,7 +76,7 @@
     <string name="label_descripcion_detalle">Description</string>
     <string name="label_fecha">Date</string>
     <string name="label_hora_simple">Time</string>
-    <string name="label_ubicacion">Location confirmed</string>
+    <string name="label_ubicacion">Location</string>
     <string name="label_reportado_por">Reported by</string>
     <string name="label_cambiar_estado">Change status</string>
     <string name="valor_si">Yes</string>

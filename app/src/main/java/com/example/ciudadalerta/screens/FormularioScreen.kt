@@ -13,7 +13,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -44,7 +43,9 @@ import com.example.ciudadalerta.viewmodel.ReportViewModel
 fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel(factory = ReportViewModel.Factory)) {
     val categoria by viewModel.categoria.collectAsState()
     val descripcion by viewModel.descripcion.collectAsState()
-    val ubicacionConfirmada by viewModel.ubicacionConfirmada.collectAsState()
+    val ubicacion by viewModel.ubicacion.collectAsState()
+    val buscandoUbicacion by viewModel.buscandoUbicacion.collectAsState()
+    val errorUbicacion by viewModel.errorUbicacion.collectAsState()
     val hora by viewModel.hora.collectAsState()
     val fotosNuevas by viewModel.fotosNuevas.collectAsState()
 
@@ -119,13 +120,13 @@ fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel(fact
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
-                checked = ubicacionConfirmada,
-                onCheckedChange = { viewModel.ubicacionConfirmada.value = it }
-            )
-            Text(stringResource(R.string.label_confirmar_ubicacion))
-        }
+        // Ubicación (GPS)
+        SelectorUbicacion(
+            ubicacion = ubicacion,
+            buscando = buscandoUbicacion,
+            error = errorUbicacion,
+            onObtener = { viewModel.obtenerUbicacion() }
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         //Fotos (opcionales)
@@ -150,7 +151,7 @@ fun FormularioScreen(usuarioId: Int, viewModel: ReportViewModel = viewModel(fact
                 Toast.makeText(context, mensajeGuardado, Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = descripcion.isNotBlank() && ubicacionConfirmada
+            enabled = descripcion.isNotBlank() && ubicacion != null
         ) {
             Text(stringResource(R.string.btn_save))
         }

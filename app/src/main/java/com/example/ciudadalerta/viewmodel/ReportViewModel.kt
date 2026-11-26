@@ -15,6 +15,8 @@ import com.example.ciudadalerta.model.Reporte
 import com.example.ciudadalerta.repository.AuthRepository
 import com.example.ciudadalerta.repository.MultimediaRepository
 import com.example.ciudadalerta.repository.ReportRepository
+import com.example.ciudadalerta.util.Coordenadas
+import com.example.ciudadalerta.util.ProveedorUbicacion
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +34,8 @@ import java.util.Locale
 class ReportViewModel(
     private val repository: ReportRepository,
     private val authRepository: AuthRepository,
-    private val multimediaRepository: MultimediaRepository
+    private val multimediaRepository: MultimediaRepository,
+    private val proveedorUbicacion: ProveedorUbicacion
 ) : ViewModel() {
 
     // Viene de Room, se actualiza solo al crear, editar, borrar o sincronizar
@@ -42,7 +45,7 @@ class ReportViewModel(
     // Estado del formulario
     val categoria = MutableStateFlow(CategoriaReporte.BACHE)
     val descripcion = MutableStateFlow("")
-    val ubicacionConfirmada = MutableStateFlow(false)
+    val ubicacion = MutableStateFlow<Coordenadas?>(null)
     val hora = MutableStateFlow("12:00")
 
     // Fotos elegidas en el formulario que todavía no se guardan
@@ -65,7 +68,9 @@ class ReportViewModel(
         val nuevo = Reporte(
             categoria = categoria.value,
             descripcion = descripcion.value.trim(),
-            ubicacionConfirmada = ubicacionConfirmada.value,
+            ubicacionConfirmada = ubicacion.value != null,
+            latitud = ubicacion.value?.latitud,
+            longitud = ubicacion.value?.longitud,
             fecha = fecha,
             hora = hora.value,
             usuarioId = usuarioId
@@ -78,7 +83,7 @@ class ReportViewModel(
             }
         }
         descripcion.value = ""
-        ubicacionConfirmada.value = false
+        ubicacion.value = null
         _fotosNuevas.value = emptyList()
     }
 
@@ -123,6 +128,25 @@ class ReportViewModel(
         viewModelScope.launch { multimediaRepository.eliminar(foto) }
     }
 
+    // GPS
+    private val _buscandoUbicacion = MutableStateFlow(false)
+    val buscandoUbicacion: StateFlow<Boolean> = _buscandoUbicacion.asStateFlow()
+
+    private val _errorUbicacion = MutableStateFlow(false)
+    val errorUbicacion: StateFlow<Boolean> = _errorUbicacion.asStateFlow()
+
+    // Por defecto la guarda en el formulario; editar pasa su propio onResultado
+    fun obtenerUbicacion(onResultado: (Coordenadas) -> Unit = { ubicacion.value = it }) {
+        if (_buscandoUbicacion.value) return
+        viewModelScope.launch {
+            _buscandoUbicacion.value = true
+            _errorUbicacion.value = false
+            val coordenadas = proveedorUbicacion.obtenerActual()
+            if (coordenadas == null) _errorUbicacion.value = true else onResultado(coordenadas)
+            _buscandoUbicacion.value = false
+        }
+    }
+
     // Recuperar desde la Web API
     fun sincronizar() {
         if (_sincronizando.value) return
@@ -143,7 +167,8 @@ class ReportViewModel(
                 ReportViewModel(
                     app.container.reportRepository,
                     app.container.authRepository,
-                    app.container.multimediaRepository
+                    app.container.multimediaRepository,
+                    app.container.proveedorUbicacion
                 )
             }
         }

@@ -65,4 +65,7 @@ dependencies {
 
     // Coil: mostrar las fotos de los reportes en Compose
     implementation(libs.coil.compose)
+
+    // GPS: ubicación actual del reporte
+    implementation(libs.play.services.location)
 }

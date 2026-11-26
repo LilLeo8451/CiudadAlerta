@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.CategoriaReporte
 import com.example.ciudadalerta.model.Reporte
+import com.example.ciudadalerta.util.Coordenadas
 import com.example.ciudadalerta.viewmodel.ReportViewModel
 
 @Composable
@@ -54,6 +54,8 @@ fun EditarReporteScreen(
 
     val context = LocalContext.current
     val mensajeActualizado = stringResource(R.string.msg_reporte_actualizado)
+    val buscandoUbicacion by viewModel.buscandoUbicacion.collectAsState()
+    val errorUbicacion by viewModel.errorUbicacion.collectAsState()
 
     if (reporte == null) {
         // Mientras Room entrega el reporte
@@ -68,7 +70,10 @@ fun EditarReporteScreen(
                 Toast.makeText(context, mensajeActualizado, Toast.LENGTH_SHORT).show()
                 onVolver()
             },
-            onCancelar = onVolver
+            onCancelar = onVolver,
+            buscandoUbicacion = buscandoUbicacion,
+            errorUbicacion = errorUbicacion,
+            onObtenerUbicacion = { onResultado -> viewModel.obtenerUbicacion(onResultado) }
         )
     }
 }
@@ -77,12 +82,19 @@ fun EditarReporteScreen(
 private fun FormularioEdicion(
     reporte: Reporte,
     onGuardar: (Reporte) -> Unit,
-    onCancelar: () -> Unit
+    onCancelar: () -> Unit,
+    buscandoUbicacion: Boolean,
+    errorUbicacion: Boolean,
+    onObtenerUbicacion: (onResultado: (Coordenadas) -> Unit) -> Unit
 ) {
     // Los valores iniciales salen del reporte; rememberSaveable conserva lo escrito al girar la pantalla
     var categoria by rememberSaveable { mutableStateOf(reporte.categoria) }
     var descripcion by rememberSaveable { mutableStateOf(reporte.descripcion) }
-    var ubicacionConfirmada by rememberSaveable { mutableStateOf(reporte.ubicacionConfirmada) }
+    var latitud by rememberSaveable { mutableStateOf(reporte.latitud) }
+    var longitud by rememberSaveable { mutableStateOf(reporte.longitud) }
+    val lat = latitud
+    val lng = longitud
+    val ubicacion = if (lat != null && lng != null) Coordenadas(lat, lng) else null
 
     Column(
         modifier = Modifier
@@ -134,10 +146,18 @@ private fun FormularioEdicion(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = ubicacionConfirmada, onCheckedChange = { ubicacionConfirmada = it })
-            Text(stringResource(R.string.label_confirmar_ubicacion))
-        }
+        // Ubicación (GPS)
+        SelectorUbicacion(
+            ubicacion = ubicacion,
+            buscando = buscandoUbicacion,
+            error = errorUbicacion,
+            onObtener = {
+                onObtenerUbicacion { nueva ->
+                    latitud = nueva.latitud
+                    longitud = nueva.longitud
+                }
+            }
+        )
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
@@ -146,12 +166,14 @@ private fun FormularioEdicion(
                     reporte.copy(
                         categoria = categoria,
                         descripcion = descripcion.trim(),
-                        ubicacionConfirmada = ubicacionConfirmada
+                        ubicacionConfirmada = ubicacion != null,
+                        latitud = ubicacion?.latitud,
+                        longitud = ubicacion?.longitud
                     )
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = descripcion.isNotBlank() && ubicacionConfirmada
+            enabled = descripcion.isNotBlank() && ubicacion != null
         ) {
             Text(stringResource(R.string.btn_guardar_cambios))
         }

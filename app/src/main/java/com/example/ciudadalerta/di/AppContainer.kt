@@ -17,6 +17,7 @@ import com.example.ciudadalerta.repository.ReportRepository
 import com.example.ciudadalerta.repository.ReportRepositoryImpl
 import com.example.ciudadalerta.util.AlmacenFotos
 import com.example.ciudadalerta.util.PasswordHasher
+import com.example.ciudadalerta.util.ProveedorUbicacion
 
 /**
  * Inyección de dependencias manual. Aquí se arma la cadena:
@@ -36,6 +37,8 @@ class AppContainer(context: Context) {
     }
 
     private val almacenFotos = AlmacenFotos(context)
+
+    val proveedorUbicacion = ProveedorUbicacion(context)
 
     val multimediaRepository: MultimediaRepository by lazy {
         MultimediaRepositoryImpl(database.multimediaDao(), almacenFotos)

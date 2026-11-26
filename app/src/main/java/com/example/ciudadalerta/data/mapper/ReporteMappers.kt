@@ -13,6 +13,8 @@ fun ReporteEntity.toDomain(): Reporte = Reporte(
     categoria = categoria,
     descripcion = descripcion,
     ubicacionConfirmada = ubicacionConfirmada,
+    latitud = latitud,
+    longitud = longitud,
     fecha = fecha,
     hora = hora,
     estatus = estatus,
@@ -20,8 +22,8 @@ fun ReporteEntity.toDomain(): Reporte = Reporte(
 )
 
 fun Reporte.toEntity(
-    latitud: Double? = null,
-    longitud: Double? = null,
+    latitud: Double? = this.latitud,
+    longitud: Double? = this.longitud,
     remoteId: Int? = null
 ): ReporteEntity = ReporteEntity(
     id = id,

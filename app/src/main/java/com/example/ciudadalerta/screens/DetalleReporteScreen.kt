@@ -48,6 +48,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ciudadalerta.R
 import com.example.ciudadalerta.model.EstadoReporte
 import com.example.ciudadalerta.viewmodel.ReportViewModel
+import com.example.ciudadalerta.util.formatearCoordenadas
 
 /**
  * Detalle de un reporte.
@@ -117,10 +118,16 @@ fun DetalleReporteScreen(
                     InfoFila(R.string.label_descripcion_detalle, reporte.descripcion)
                     InfoFila(R.string.label_fecha, reporte.fecha)
                     InfoFila(R.string.label_hora_simple, reporte.hora)
+                    val lat = reporte.latitud
+                    val lng = reporte.longitud
                     InfoFila(
                         R.string.label_ubicacion,
-                        stringResource(if (reporte.ubicacionConfirmada) R.string.valor_si else R.string.valor_no)
+                        if (lat != null && lng != null) formatearCoordenadas(lat, lng)
+                        else stringResource(R.string.label_sin_ubicacion)
                     )
+                    if (lat != null && lng != null) {
+                        BotonVerEnMapa(latitud = lat, longitud = lng)
+                    }
                     val autor by produceState(initialValue = "—", reporte.usuarioId) {
                         value = viewModel.nombreAutor(reporte.usuarioId)
                     }
