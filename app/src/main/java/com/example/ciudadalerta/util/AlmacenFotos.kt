@@ -39,6 +39,12 @@ class AlmacenFotos(context: Context) {
         Uri.fromFile(destino).toString()
     }
 
+    // El archivo local de una foto (null si es una URL de internet o ya no existe)
+    fun archivoDe(uri: String): File? {
+        if (!uri.startsWith("file:")) return null
+        return Uri.parse(uri).path?.let { File(it) }?.takeIf { it.exists() }
+    }
+
     suspend fun eliminar(uri: String) {
         withContext<Unit>(Dispatchers.IO) {
             val ruta = Uri.parse(uri).path ?: return@withContext

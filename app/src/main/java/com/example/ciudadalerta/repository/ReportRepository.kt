@@ -21,4 +21,7 @@ interface ReportRepository {
     suspend fun eliminar(id: Int)
 
     suspend fun sincronizar(): Result<Unit>
+
+    // Se agregaron o quitaron fotos: vuelve a subir el reporte
+    suspend fun fotosCambiaron(id: Int)
 }

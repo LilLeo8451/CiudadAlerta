@@ -2,6 +2,7 @@ package com.example.ciudadalerta.data.mapper
 
 import com.example.ciudadalerta.data.local.entity.ReporteEntity
 import com.example.ciudadalerta.data.remote.dto.ReporteDto
+import com.example.ciudadalerta.data.remote.dto.listaFotosJson
 import com.example.ciudadalerta.model.CategoriaReporte
 import com.example.ciudadalerta.model.EstadoReporte
 import com.example.ciudadalerta.model.Reporte
@@ -42,7 +43,7 @@ fun Reporte.toEntity(
 
 // Room <> Web API
 
-fun ReporteEntity.toDto(): ReporteDto = ReporteDto(
+fun ReporteEntity.toDto(fotos: List<String>? = null): ReporteDto = ReporteDto(
     id = remoteId,
     categoria = categoria.name,
     descripcion = descripcion,
@@ -52,7 +53,8 @@ fun ReporteEntity.toDto(): ReporteDto = ReporteDto(
     fecha = fecha,
     hora = hora,
     estatus = estatus.name,
-    usuarioId = usuarioId
+    usuarioId = usuarioId,
+    fotos = listaFotosJson(fotos)
 )
 
 fun ReporteDto.toEntityOrNull(localId: Int = 0): ReporteEntity? {

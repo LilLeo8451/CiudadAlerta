@@ -55,4 +55,7 @@ interface ReporteDao {
 
     @Query("UPDATE reportes SET sincronizado = 1, remoteId = :remoteId WHERE id = :id")
     suspend fun marcarSincronizado(id: Int, remoteId: Int)
+
+    @Query("UPDATE reportes SET sincronizado = 0 WHERE id = :id")
+    suspend fun marcarPendiente(id: Int)
 }

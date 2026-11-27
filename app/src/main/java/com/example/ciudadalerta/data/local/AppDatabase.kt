@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.ciudadalerta.data.local.dao.MultimediaDao
 import com.example.ciudadalerta.data.local.dao.NotificacionDao
 import com.example.ciudadalerta.data.local.dao.ReporteDao
@@ -20,7 +22,7 @@ import com.example.ciudadalerta.data.local.entity.UsuarioEntity
         MultimediaEntity::class,
         NotificacionEntity::class
     ],
-    version = 2,                 // súbela cada vez que cambie una entidad
+    version = 3,                 // súbela cada vez que cambie una entidad
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -34,6 +36,13 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        // v3: columna urlRemota en multimedia (no se borran los datos)
+        private val MIGRACION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE multimedia ADD COLUMN urlRemota TEXT")
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -41,6 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "ciudad_alerta.db"
                 )
+                    .addMigrations(MIGRACION_2_3)
                     // Si cambia la versión, recrea la BD (los reportes se vuelven a bajar de la API)
                     .fallbackToDestructiveMigration(true)
                     .build().also { INSTANCE = it }

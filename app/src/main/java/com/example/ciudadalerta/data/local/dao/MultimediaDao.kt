@@ -24,4 +24,14 @@ interface MultimediaDao {
 
     @Query("UPDATE multimedia SET sincronizado = 1 WHERE id = :id")
     suspend fun marcarSincronizada(id: Int)
+
+    @Query("SELECT * FROM multimedia WHERE reporteId = :reporteId")
+    suspend fun obtenerPorReporte(reporteId: Int): List<MultimediaEntity>
+
+    // Guarda la URL que regresó Cloudinary
+    @Query("UPDATE multimedia SET sincronizado = 1, urlRemota = :url WHERE id = :id")
+    suspend fun marcarSubida(id: Int, url: String)
+
+    @Query("DELETE FROM multimedia WHERE id = :id")
+    suspend fun eliminarPorId(id: Int)
 }

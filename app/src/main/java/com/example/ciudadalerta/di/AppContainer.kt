@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.ciudadalerta.data.local.AppDatabase
 import com.example.ciudadalerta.data.local.ReportLocalDataSource
 import com.example.ciudadalerta.data.local.entity.UsuarioEntity
+import com.example.ciudadalerta.data.remote.FotosRemoteDataSource
 import com.example.ciudadalerta.data.remote.NetworkModule
 import com.example.ciudadalerta.data.remote.ReportRemoteDataSource
 import com.example.ciudadalerta.model.Rol
@@ -41,14 +42,19 @@ class AppContainer(context: Context) {
     val proveedorUbicacion = ProveedorUbicacion(context)
 
     val multimediaRepository: MultimediaRepository by lazy {
-        MultimediaRepositoryImpl(database.multimediaDao(), almacenFotos)
+        MultimediaRepositoryImpl(
+            dao = database.multimediaDao(),
+            almacen = almacenFotos,
+            remote = FotosRemoteDataSource(NetworkModule.cloudinaryApi)
+        )
     }
 
     val reportRepository: ReportRepository by lazy {
         ReportRepositoryImpl(
             local = ReportLocalDataSource(database.reporteDao()),
             remote = ReportRemoteDataSource(NetworkModule.reporteApi),
-            notificaciones = notificacionRepository
+            notificaciones = notificacionRepository,
+            fotos = multimediaRepository
         )
     }
 
