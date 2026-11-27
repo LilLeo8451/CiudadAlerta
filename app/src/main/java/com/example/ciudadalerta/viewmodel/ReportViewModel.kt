@@ -160,6 +160,7 @@ class ReportViewModel(
         if (_sincronizando.value) return
         viewModelScope.launch {
             _sincronizando.value = true
+            authRepository.sincronizarUsuarios()   // nombres de los autores
             _sinConexion.value = repository.sincronizar().isFailure
             _sincronizando.value = false
         }

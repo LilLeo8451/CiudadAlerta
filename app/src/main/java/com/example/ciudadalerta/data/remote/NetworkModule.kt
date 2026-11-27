@@ -2,6 +2,7 @@ package com.example.ciudadalerta.data.remote
 
 import com.example.ciudadalerta.data.remote.api.CloudinaryApiService
 import com.example.ciudadalerta.data.remote.api.ReporteApiService
+import com.example.ciudadalerta.data.remote.api.UsuarioApiService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -50,6 +51,8 @@ object NetworkModule {
     }
 
     val reporteApi: ReporteApiService by lazy { retrofit.create(ReporteApiService::class.java) }
+
+    val usuarioApi: UsuarioApiService by lazy { retrofit.create(UsuarioApiService::class.java) }
 
     // Cliente aparte para fotos: solo registra encabezados (no el archivo completo)
     private val clienteFotos: OkHttpClient by lazy {

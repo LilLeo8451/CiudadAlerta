@@ -72,3 +72,18 @@ MockAPI no guarda archivos, así que las fotos se suben a **Cloudinary** y en el
 ```
 
 Flujo: al sincronizar un reporte, `MultimediaRepository.subirPendientes()` sube a Cloudinary las fotos que no tienen `urlRemota`, guarda la URL en Room y luego se hace el POST/PUT del reporte con la lista `fotos`. Los demás teléfonos reciben las URLs en `sincronizar()` y Coil muestra las fotos desde internet.
+
+## Usuarios
+
+Recurso `usuarios` en MockAPI: `nombre`, `correo`, `passwordHash`, `rol` (`CIUDADANO` | `ADMIN`).
+
+| Acción | Método | Ruta |
+|---|---|---|
+| Listar (nombres de autores) | GET | `usuarios` |
+| Buscar para login | GET | `usuarios?correo={correo}` (MockAPI responde 404 si no hay resultados) |
+| Registrar | POST | `usuarios` |
+
+- La contraseña **nunca** viaja en texto: se guarda `passwordHash` = PBKDF2 con sal (`util/PasswordHasher.kt`).
+- El id del usuario lo asigna MockAPI y se usa también como id en Room, así `usuarioId` de los reportes apunta a la misma persona en todos los teléfonos.
+- Login: primero Room (funciona sin internet); si el usuario no está en el teléfono, se busca en la API y se guarda.
+- Registro: necesita internet (primero se crea en la API para obtener el id).

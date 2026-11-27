@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -40,16 +39,15 @@ class ReportesCiudadViewModel(
     private val _sinConexion = MutableStateFlow(false)
     val sinConexion: StateFlow<Boolean> = _sinConexion.asStateFlow()
 
+    // Los nombres salen de los usuarios bajados de la API
     val reportes: StateFlow<List<ReporteConAutor>> = combine(
         repository.reportes,
-        filtroCategoria
-    ) { lista, filtro ->
+        filtroCategoria,
+        authRepository.usuarios
+    ) { lista, filtro, usuarios ->
+        val nombres = usuarios.associate { it.id to it.nombre }
         val filtrada = if (filtro == null) lista else lista.filter { it.categoria == filtro }
-        ordenarMasRecientesPrimero(filtrada)
-    }.map { lista ->
-        val nombres = lista.map { it.usuarioId }.distinct()
-            .associateWith { id -> authRepository.buscarPorId(id)?.nombre }
-        lista.map { ReporteConAutor(it, nombres[it.usuarioId]) }
+        ordenarMasRecientesPrimero(filtrada).map { ReporteConAutor(it, nombres[it.usuarioId]) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
@@ -64,6 +62,7 @@ class ReportesCiudadViewModel(
         if (_sincronizando.value) return
         viewModelScope.launch {
             _sincronizando.value = true
+            authRepository.sincronizarUsuarios()
             _sinConexion.value = repository.sincronizar().isFailure
             _sincronizando.value = false
         }

@@ -7,6 +7,7 @@ import com.example.ciudadalerta.data.local.entity.UsuarioEntity
 import com.example.ciudadalerta.data.remote.FotosRemoteDataSource
 import com.example.ciudadalerta.data.remote.NetworkModule
 import com.example.ciudadalerta.data.remote.ReportRemoteDataSource
+import com.example.ciudadalerta.data.remote.UsuarioRemoteDataSource
 import com.example.ciudadalerta.model.Rol
 import com.example.ciudadalerta.repository.AuthRepository
 import com.example.ciudadalerta.repository.AuthRepositoryImpl
@@ -30,7 +31,10 @@ class AppContainer(context: Context) {
     private val database: AppDatabase = AppDatabase.getInstance(context)
 
     val authRepository: AuthRepository by lazy {
-        AuthRepositoryImpl(database.usuarioDao())
+        AuthRepositoryImpl(
+            usuarioDao = database.usuarioDao(),
+            remote = UsuarioRemoteDataSource(NetworkModule.usuarioApi)
+        )
     }
 
     val notificacionRepository: NotificacionRepository by lazy {
@@ -58,12 +62,14 @@ class AppContainer(context: Context) {
         )
     }
 
-    /** Crea el administrador y un ciudadano de prueba la primera vez que se abre la app. */
+    // Admin y ciudadano de prueba con los mismos ids que tienen en MockAPI (1 y 2)
     suspend fun sembrarDatosIniciales() {
         val dao = database.usuarioDao()
         if (!dao.existeCorreo("admin@ciudadalerta.com")) {
-            dao.insertar(
+            dao.guardar(
                 UsuarioEntity(
+                    id = 1,
+                    remoteId = 1,
                     nombre = "Administrador",
                     correo = "admin@ciudadalerta.com",
                     passwordHash = PasswordHasher.hashear("admin123"),
@@ -72,8 +78,10 @@ class AppContainer(context: Context) {
             )
         }
         if (!dao.existeCorreo("juan@correo.com")) {
-            dao.insertar(
+            dao.guardar(
                 UsuarioEntity(
+                    id = 2,
+                    remoteId = 2,
                     nombre = "Juan Pérez",
                     correo = "juan@correo.com",
                     passwordHash = PasswordHasher.hashear("123456"),

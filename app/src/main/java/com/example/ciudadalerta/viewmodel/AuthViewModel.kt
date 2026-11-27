@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.ciudadalerta.CiudadAlertaApp
 import com.example.ciudadalerta.model.Usuario
 import com.example.ciudadalerta.repository.AuthRepository
+import com.example.ciudadalerta.repository.ResultadoRegistro
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +22,8 @@ enum class AuthError {
     CORREO_INVALIDO,
     CORREO_YA_REGISTRADO,
     PASSWORD_CORTA,
-    PASSWORDS_NO_COINCIDEN
+    PASSWORDS_NO_COINCIDEN,
+    SIN_CONEXION
 }
 
 class AuthViewModel(
@@ -79,13 +81,14 @@ class AuthViewModel(
             return
         }
         viewModelScope.launch {
-            val usuario = authRepository.registrar(nombre, correo, password)
-            if (usuario == null) {
-                _error.value = AuthError.CORREO_YA_REGISTRADO
-            } else {
-                _error.value = null
-                _usuarioActual.value = usuario
-                onExito(usuario)
+            when (val resultado = authRepository.registrar(nombre, correo, password)) {
+                is ResultadoRegistro.Exito -> {
+                    _error.value = null
+                    _usuarioActual.value = resultado.usuario
+                    onExito(resultado.usuario)
+                }
+                ResultadoRegistro.CorreoEnUso -> _error.value = AuthError.CORREO_YA_REGISTRADO
+                ResultadoRegistro.SinConexion -> _error.value = AuthError.SIN_CONEXION
             }
         }
     }

@@ -18,6 +18,7 @@ class CiudadAlertaApp : Application() {
         container = AppContainer(this)
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             container.sembrarDatosIniciales()
+            container.authRepository.sincronizarUsuarios()   // si no hay internet no pasa nada
         }
     }
 }
