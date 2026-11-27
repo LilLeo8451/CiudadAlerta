@@ -42,6 +42,7 @@
     <string name="error_correo_registrado">Ese correo ya está registrado.</string>
     <string name="error_password_corta">La contraseña debe tener al menos 6 caracteres.</string>
     <string name="error_passwords_no_coinciden">Las contraseñas no coinciden.</string>
+    <string name="error_sin_conexion_registro">Se necesita internet para crear la cuenta. Inténtalo de nuevo.</string>
 
     <!-- Nuevo reporte -->
     <string name="title_new_report">Nuevo Reporte</string>

@@ -36,4 +36,5 @@ fun AuthError.mensajeRes(): Int = when (this) {
     AuthError.CORREO_YA_REGISTRADO -> R.string.error_correo_registrado
     AuthError.PASSWORD_CORTA -> R.string.error_password_corta
     AuthError.PASSWORDS_NO_COINCIDEN -> R.string.error_passwords_no_coinciden
+    AuthError.SIN_CONEXION -> R.string.error_sin_conexion_registro
 }

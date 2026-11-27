@@ -42,6 +42,7 @@
     <string name="error_correo_registrado">That email is already registered.</string>
     <string name="error_password_corta">Password must be at least 6 characters.</string>
     <string name="error_passwords_no_coinciden">Passwords do not match.</string>
+    <string name="error_sin_conexion_registro">An internet connection is needed to create the account. Please try again.</string>
 
     <!-- New report -->
     <string name="title_new_report">New Report</string>
