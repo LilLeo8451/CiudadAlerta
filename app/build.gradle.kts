@@ -65,6 +65,7 @@ dependencies {
 
     // Coil: mostrar las fotos de los reportes en Compose
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)   // para mostrar fotos desde internet (Cloudinary)
 
     // GPS: ubicación actual del reporte
     implementation(libs.play.services.location)

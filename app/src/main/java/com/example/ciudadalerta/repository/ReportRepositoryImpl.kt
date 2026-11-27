@@ -19,7 +19,8 @@ import kotlinx.coroutines.withContext
 class ReportRepositoryImpl(
     private val local: ReportLocalDataSource,
     private val remote: ReportRemoteDataSource,
-    private val notificaciones: NotificacionRepository
+    private val notificaciones: NotificacionRepository,
+    private val fotos: MultimediaRepository
 ) : ReportRepository {
     // Evita que dos sincronizaciones al mismo tiempo suban dos veces el mismo reporte
     private val mutex = Mutex()
@@ -70,6 +71,11 @@ class ReportRepositoryImpl(
         }
     }
 
+    override suspend fun fotosCambiaron(id: Int) {
+        local.marcarPendiente(id)
+        subir(id)
+    }
+
     override suspend fun sincronizar(): Result<Unit> {
         local.pendientesDeSincronizar().forEach { subir(it.id) }
 
@@ -78,18 +84,25 @@ class ReportRepositoryImpl(
         val delServidor = respuesta.getOrElse { return Result.failure(it) }
 
         mutex.withLock {
-            val recibidos = delServidor.mapNotNull { it.toEntityOrNull() }
-            val idsRemotos = recibidos.mapNotNull { it.remoteId }.toSet()
+            // Cada reporte junto con las URLs de sus fotos
+            val recibidos = delServidor.mapNotNull { dto ->
+                dto.toEntityOrNull()?.let { it to dto.urlsFotos() }
+            }
+            val idsRemotos = recibidos.mapNotNull { it.first.remoteId }.toSet()
 
-            recibidos.forEach { nuevo ->
+            recibidos.forEach { (nuevo, urlsFotos) ->
                 val existente = local.buscarPorRemoteId(nuevo.remoteId!!)
                 when {
-                    existente == null -> local.insertar(nuevo)
+                    existente == null -> {
+                        val idLocal = local.insertar(nuevo)
+                        fotos.aplicarFotosDelServidor(idLocal, urlsFotos)
+                    }
                     existente.sincronizado -> {
                         if (existente.estatus != nuevo.estatus) {
                             notificaciones.crear(existente.usuarioId, existente.id, nuevo.estatus)
                         }
                         local.actualizar(nuevo.copy(id = existente.id))
+                        fotos.aplicarFotosDelServidor(existente.id, urlsFotos)
                     }
                     else -> Unit
                 }
@@ -106,12 +119,15 @@ class ReportRepositoryImpl(
         val entity = local.buscarPorId(idLocal) ?: return@withLock false
         if (entity.sincronizado) return@withLock true
 
+        // Primero las fotos a Cloudinary; sus URLs viajan dentro del reporte
+        val urlsFotos = fotos.subirPendientes(idLocal).getOrElse { return@withLock false }
+
         val remoteId = entity.remoteId
         val resultado = if (remoteId == null) {
-            remote.crear(entity.toDto())
+            remote.crear(entity.toDto(urlsFotos))
         } else {
-            remote.actualizar(remoteId, entity.toDto()).recoverCatching { error ->
-                if (error.esNoEncontrado()) remote.crear(entity.copy(remoteId = null).toDto()).getOrThrow()
+            remote.actualizar(remoteId, entity.toDto(urlsFotos)).recoverCatching { error ->
+                if (error.esNoEncontrado()) remote.crear(entity.copy(remoteId = null).toDto(urlsFotos)).getOrThrow()
                 else throw error
             }
         }

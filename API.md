@@ -58,3 +58,17 @@ json-server --watch db.json --port 3000 --host 0.0.0.0
 3. Al abrir las pantallas, `sincronizar()` sube lo pendiente y baja lo que hay en el servidor
    (inserta lo nuevo, actualiza lo que cambió y borra lo que ya no existe allá).
 4. Las peticiones y su JSON se ven en Logcat filtrando por `okhttp`.
+
+## Fotos en la nube (Cloudinary)
+
+MockAPI no guarda archivos, así que las fotos se suben a **Cloudinary** y en el reporte solo viajan sus URLs.
+
+- Endpoint (Retrofit, `CloudinaryApiService`): `POST https://api.cloudinary.com/v1_1/{cloudName}/image/upload` con `@Multipart` (`file` + `upload_preset`).
+- Configuración en `NetworkModule.kt` → `CloudinaryConfig` (`CLOUD_NAME`, `UPLOAD_PRESET`). El preset es **sin firma**, así que la app no guarda ninguna clave secreta.
+- En MockAPI el recurso `reportes` tiene un campo `fotos` (lista de URLs):
+
+```json
+"fotos": ["https://res.cloudinary.com/ujqvxmq5/image/upload/v1/ciudadalerta/abc123.jpg"]
+```
+
+Flujo: al sincronizar un reporte, `MultimediaRepository.subirPendientes()` sube a Cloudinary las fotos que no tienen `urlRemota`, guarda la URL en Room y luego se hace el POST/PUT del reporte con la lista `fotos`. Los demás teléfonos reciben las URLs en `sincronizar()` y Coil muestra las fotos desde internet.

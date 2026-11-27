@@ -36,4 +36,6 @@ class ReportLocalDataSource(private val dao: ReporteDao) {
     suspend fun pendientesDeSincronizar(): List<ReporteEntity> = dao.obtenerPendientesDeSincronizar()
 
     suspend fun marcarSincronizado(id: Int, remoteId: Int) = dao.marcarSincronizado(id, remoteId)
+
+    suspend fun marcarPendiente(id: Int) = dao.marcarPendiente(id)
 }

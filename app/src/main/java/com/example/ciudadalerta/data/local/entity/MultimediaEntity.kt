@@ -21,5 +21,6 @@ data class MultimediaEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val reporteId: Int,
     val uri: String,                           // ruta o URI de la foto
-    val sincronizado: Boolean = false
+    val sincronizado: Boolean = false,
+    val urlRemota: String? = null              // URL en Cloudinary (null = falta subirla)
 )

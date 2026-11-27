@@ -81,6 +81,8 @@ class ReportViewModel(
             fotos.forEach { uri ->
                 runCatching { multimediaRepository.agregarFoto(reporteId, uri) }
             }
+            // Ahora sí suben las fotos a Cloudinary y se actualiza el reporte en la API
+            if (fotos.isNotEmpty()) repository.fotosCambiaron(reporteId)
         }
         descripcion.value = ""
         ubicacion.value = null
@@ -121,11 +123,17 @@ class ReportViewModel(
 
     // Agregar una foto a un reporte que ya existe
     fun agregarFoto(reporteId: Int, uri: Uri) {
-        viewModelScope.launch { runCatching { multimediaRepository.agregarFoto(reporteId, uri) } }
+        viewModelScope.launch {
+            runCatching { multimediaRepository.agregarFoto(reporteId, uri) }
+            repository.fotosCambiaron(reporteId)
+        }
     }
 
     fun eliminarFoto(foto: Multimedia) {
-        viewModelScope.launch { multimediaRepository.eliminar(foto) }
+        viewModelScope.launch {
+            multimediaRepository.eliminar(foto)
+            repository.fotosCambiaron(foto.reporteId)
+        }
     }
 
     // GPS

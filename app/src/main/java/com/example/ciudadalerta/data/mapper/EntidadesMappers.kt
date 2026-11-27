@@ -10,10 +10,10 @@ import com.example.ciudadalerta.model.Usuario
 fun UsuarioEntity.toDomain() = Usuario(id = id, nombre = nombre, correo = correo, rol = rol)
 
 fun MultimediaEntity.toDomain() =
-    Multimedia(id = id, reporteId = reporteId, uri = uri, sincronizado = sincronizado)
+    Multimedia(id = id, reporteId = reporteId, uri = uri, sincronizado = sincronizado, urlRemota = urlRemota)
 
 fun Multimedia.toEntity() =
-    MultimediaEntity(id = id, reporteId = reporteId, uri = uri, sincronizado = sincronizado)
+    MultimediaEntity(id = id, reporteId = reporteId, uri = uri, sincronizado = sincronizado, urlRemota = urlRemota)
 
 fun NotificacionEntity.toDomain() = Notificacion(
     id = id,
